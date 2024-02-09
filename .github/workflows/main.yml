@@ -1,0 +1,451 @@
+name: Main
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency: CI
+jobs:
+
+  analyze-code:
+    name: Analyze Code
+    uses: informatievlaanderen/build-pipeline/.github/workflows/analyze-code.yml@main
+    with:
+      registry: association-registry-kbomutations
+    secrets: inherit
+
+  set-release-version:
+    if: github.repository_owner == 'Informatievlaanderen'
+    name: Decide next version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: informatievlaanderen/build-pipeline/.github/actions/setup-nodejs@main
+
+      - name: Run Semantic Release dry-run
+        shell: bash
+        run: npx semantic-release --dry-run
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_COMMIT: ${{ github.sha }}
+          GIT_USERNAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+
+      - name: Set Release Version
+        id: set-version
+        run: |
+          [ ! -f semver ] && echo none > semver
+          echo $(cat semver)
+          echo ::set-output name=version::$(cat semver)
+          echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+        shell: bash
+  
+  build-sftp-fetcher-runner:
+    if: github.repository_owner == 'informatievlaanderen' && needs.set-release-version.outputs.version != 'none'
+    name: Build Magda Fetcher
+    runs-on: ubuntu-latest
+    needs: [ set-release-version ]
+    steps:
+      - name: Check version
+        shell: bash
+        run: echo $SEMVER
+        env:
+          SEMVER: ${{ needs.set-release-version.outputs.version }}
+
+      - name: Display disk space
+        run: |
+          df -h
+
+      - name: Delete huge unnecessary tools folder
+        run: rm -rf /opt/hostedtoolcache
+
+      - name: Display disk space
+        run: |
+          df -h
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
+
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: .NET version
+        shell: bash
+        run: dotnet --info
+
+      - name: Clean
+        run: dotnet nuget locals all --clear
+
+      - name: Restore dotnet tools
+        shell: bash
+        run: |
+          dotnet tool restore
+
+      - name: Run dependencies
+        shell: bash
+        run: |
+          docker compose up -d
+          
+      - name: Restore paket packages
+        id: cache-paket-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            packages
+            .paket/Paket.Restore.targets
+          key: ${{ runner.os }}-paket-${{ hashFiles('paket.lock', '.paket/Paket.Restore.targets') }}
+
+      - name: Create testresults directory
+        run: mkdir -p testresults
+
+      - name: Test via docker run
+        shell: bash
+        run: |
+          docker run --network host --rm -v $(pwd):/app -w /app/ mcr.microsoft.com/dotnet/sdk:6.0.201 /bin/sh .github/build-scripts/run-tests-docker.sh AssociationRegistry.KboMutations.Fetcher.Tests
+
+      - name: Set solution info
+        shell: bash
+        run: |
+          docker run --network host -e CI_BUILD_NUMBER -e GIT_HASH --rm -v $(pwd):/app -w /app/ mcr.microsoft.com/dotnet/sdk:6.0.201 /bin/sh .github/build-scripts/set-solution-info.sh
+        env:
+          CI_BUILD_NUMBER: ${{ needs.set-release-version.outputs.version }}
+
+      - name: Publish via docker run
+        shell: bash
+        run: |
+          docker run --network host --rm -v $(pwd):/app -w /app/ mcr.microsoft.com/dotnet/sdk:6.0.201 /bin/sh .github/build-scripts/publish.sh AssociationRegistry.KboMutations.Fetcher
+
+      - name: Build image
+        shell: bash
+        run: |
+          .github/build-scripts/build-docker.sh AssociationRegistry.KboMutations.Fetcher verenigingsregister-kbomutations
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.BUILD_DOCKER_REGISTRY }}
+          CI_BUILD_NUMBER: ${{ needs.set-release-version.outputs.version }}
+      
+      - name: Show images
+        shell: bash
+        run: docker images
+
+      - name: Save Image
+        if: needs.set-release-version.outputs.version != 'none'
+        shell: bash
+        run: docker image save $BUILD_DOCKER_REGISTRY/verenigingsregister-kbomutations:$SEMVER -o ~/verenigingsregister-kbomutations.tar
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.BUILD_DOCKER_REGISTRY }}
+          SEMVER: ${{ needs.set-release-version.outputs.version }}
+
+      - name: Upload Api artifact
+        if: needs.set-release-version.outputs.version != 'none'
+        uses: actions/upload-artifact@v3
+        with:
+          name: verenigingsregister-kbomutations
+          path: ~/verenigingsregister-kbomutations.tar
+
+      - name: Shows logs elasticsearch container
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          docker logs elasticsearch
+
+      - name: Shows logs wiremock container
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          docker logs wiremock
+
+      - name: Shows logs db container
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          docker logs db
+ 
+  release:
+    if: needs.set-release-version.outputs.version != 'none'
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    needs: 
+      - build-sftp-fetcher-runner
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Cache NPM
+        uses: informatievlaanderen/build-pipeline/.github/actions/cache-npm@main
+
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
+        
+      - name: Setup NodeJS
+        uses: informatievlaanderen/build-pipeline/.github/actions/setup-nodejs@main
+
+      - name: Setup Python
+        uses: informatievlaanderen/build-pipeline/.github/actions/setup-python@main
+
+      - name: Generate Token
+        id: generate_token   # Add an ID to this step for reference
+        run: node .github/build-scripts/generate-token.js
+        env:
+          APP_ID: ${{ secrets.MYBOT_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate_token.outputs.installationToken  }}
+
+      - name: Install NPM dependencies
+        shell: bash
+        run: npm install --legacy-peer-deps
+
+      - name: Run Semantic Release
+        shell: bash
+        run: npx semantic-release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.installationToken  }}
+          GIT_COMMIT: ${{ github.sha }}
+          GIT_USERNAME: ${{ steps.generate_token.outputs.installationToken }}
+          GIT_AUTHOR_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_COMMITTER_NAME: ${{ secrets.VBR_GIT_USER }}
+          GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+          BUILD_DOCKER_REGISTRY: ${{ secrets.BUILD_DOCKER_REGISTRY }}
+
+      - name: Set Release Version
+        id: set-version
+        run: |
+          [ ! -f semver ] && echo none > semver
+          echo $(cat semver)
+          echo ::set-output name=version::$(cat semver)
+          echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
+        shell: bash
+
+  publish_to_atlassian:
+    if: needs.release.outputs.version != 'none'
+    needs: 
+      - set-release-version
+      - release
+    name: Publish to Atlassian
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Parse repository name
+        run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
+        shell: bash
+
+      - name: Cache Paket
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-paket
+        with:
+          path: packages
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            
+      - name: Cache Python
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests markdown argparse
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: .NET version
+        shell: bash
+        run: dotnet --info
+
+      - name: Restore dotnet tools
+        shell: bash
+        run: |
+          dotnet tool restore
+
+      - name: Paket install
+        shell: bash
+        run: dotnet paket install
+
+      - name: Paket restore
+        shell: bash
+        run: dotnet paket restore
+
+      - name: Publish to Confluence
+        if: needs.set-release-version.outputs.version != 'none'
+        shell: bash
+        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
+        env:
+          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+
+      - name: Create Jira Release
+        if: needs.set-release-version.outputs.version != 'none'
+        shell: bash
+        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
+        env:
+          CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
+          CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
+          CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
+          JIRA_PREFIX: Association-KboMutations
+          JIRA_PROJECT: OR
+          JIRA_VERSION: ${{ needs.set-release-version.outputs.version }}
+  
+  push_images_to_devops_ik4:
+    if: needs.set-release-version.outputs.version != 'none'
+    needs: [ release ]
+    name: Push images to DevOps (IK4)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials (Test)
+        if: needs.release.outputs.version != 'none'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID_IK4 }}
+          aws-secret-access-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY_IK4 }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+
+      - name: Login to Amazon ECR (DevOps)
+        if: needs.release.outputs.version != 'none'
+        uses: aws-actions/amazon-ecr-login@v1.5.3
+
+      - name: Download verenigingsregister-kbomutations-fetcher artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: verenigingsregister-kbomutations
+          path: ~/
+
+      - name: Load verenigingsregister-kbomutations-fetcher image
+        shell: bash
+        run: docker image load -i ~/verenigingsregister-kbomutations.tar
+
+      - name: Push docker images to ECR DevOps
+        if: needs.release.outputs.version != 'none'
+        shell: bash
+        run: |
+          echo $SEMVER
+          docker push $BUILD_DOCKER_REGISTRY/verenigingsregister-kbomutations:$SEMVER
+        env:
+          BUILD_DOCKER_REGISTRY: ${{ secrets.BUILD_DOCKER_REGISTRY }}
+          SEMVER: ${{ needs.release.outputs.version }}
+          WORKSPACE: ${{ github.workspace }}
+           
+#   deploy_test_services_ik4:
+#     if: needs.release.outputs.version != 'none'
+#     needs: [ set-release-version, push_images_to_devops_ik4, release ]
+#     name: Deploy services to Test (IK4)
+#     environment: 'test_ik4'
+#     runs-on: 'ubuntu-latest'
+#     strategy:
+#       matrix:
+#         services:
+#           [
+#           ]
+#     steps:
+#       - name: debug_output
+#         shell: bash
+#         run: |
+#           echo ${{ needs.release.outputs.version }}
+#       - name: CD
+#         if: needs.release.outputs.version != 'none'
+#         env:
+#           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
+#           STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+#         uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+#         with:
+#           environment: 'test'
+#           version: ${{ needs.release.outputs.version }}
+#           status-url: $STATUS_URL
+#           deploy-url: $BUILD_URL
+#           access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID_IK4 }}
+#           secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY_IK4 }}
+#           region: 'eu-west-1'
+#           deploy-target: 'ecs_service'
+#           interval: 2
+#       - name: output
+#         shell: bash
+#         if: always()
+#         run: |
+#           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+#           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+#           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
+  deploy_test_scheduled_tasks_ik4:
+    if: needs.release.outputs.version != 'none'
+    needs: [ set-release-version, push_images_to_devops_ik4, release ]
+    name: Deploy scheduled tasks to Test (IK4)
+    environment: 'test_ik4'
+    runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        services:
+          [
+            'kbomutations'
+          ]
+    steps:
+      - name: debug_output
+        shell: bash
+        run: |
+          echo ${{ needs.release.outputs.version }}
+      - name: CD
+        if: needs.release.outputs.version != 'none'
+        env:
+          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
+          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}
+        uses: informatievlaanderen/awscurl-polling-action/polling-action@main
+        with:
+          environment: 'test'
+          version: ${{ needs.release.outputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID_IK4 }}
+          secret-key: ${{ secrets.VBR_AWS_BUILD_USER_SECRET_ACCESS_KEY_IK4 }}
+          region: 'eu-west-1'
+          deploy-target: 'ecs_scheduled_task'
+          interval: 2
+      - name: output
+        shell: bash
+        if: always()
+        run: |
+          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+          echo ${{ steps.awscurl-polling-action.outputs.final-message }}
