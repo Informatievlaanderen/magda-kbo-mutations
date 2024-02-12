@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{AB1680A9-D96D-4EA3-B473-1AD901553E99}"
 	ProjectSection(SolutionItems) = preProject
 		paket.dependencies = paket.dependencies
@@ -7,12 +10,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{AB1680
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{268595C7-F542-4261-A2FF-58E275A88CC0}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		.gitignore = .gitignore
 		README.md = README.md
-		.dockerignore = .dockerignore
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.Fetcher", "src\AssociationRegistry.KboMutations.Fetcher\AssociationRegistry.KboMutations.Fetcher.csproj", "{EBA29596-DA6F-48B8-BB4A-FC49D7AD0790}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{26FCD4EA-8B49-4F8E-8E68-C63576940F0C}"
 EndProject
@@ -21,18 +22,63 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\main.yml = .github\workflows\main.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4233CA41-24DE-4196-8A13-D4AF5B2B330A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationLambda", "src\AssociationRegistry.KboMutations.MutationLambda\AssociationRegistry.KboMutations.MutationLambda.csproj", "{485463C1-D818-42CD-BDA7-C50AAF8DACB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationFileLambda", "src\AssociationRegistry.KboMutations.MutationFileLambda\AssociationRegistry.KboMutations.MutationFileLambda.csproj", "{62134B26-4B1F-420E-9704-1A1D89A795FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.SyncLambda", "src\AssociationRegistry.KboMutations.SyncLambda\AssociationRegistry.KboMutations.SyncLambda.csproj", "{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationFileLambda.Tests", "test\AssociationRegistry.KboMutations.MutationFileLambda.Tests\AssociationRegistry.KboMutations.MutationFileLambda.Tests.csproj", "{402672B1-7EA0-48BD-A29C-D874F14F3657}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambda.Tests", "test\AssociationRegistry.KboMutations.MutationLambda.Tests\AssociationRegistry.KboMutations.MutationLambda.Tests.csproj", "{224990A2-B279-4241-9619-FD7E46F4C453}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.SyncLambda.Tests", "test\AssociationRegistry.KboMutations.SyncLambda.Tests\AssociationRegistry.KboMutations.SyncLambda.Tests.csproj", "{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EBA29596-DA6F-48B8-BB4A-FC49D7AD0790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBA29596-DA6F-48B8-BB4A-FC49D7AD0790}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBA29596-DA6F-48B8-BB4A-FC49D7AD0790}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBA29596-DA6F-48B8-BB4A-FC49D7AD0790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Release|Any CPU.Build.0 = Release|Any CPU
+		{224990A2-B279-4241-9619-FD7E46F4C453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{224990A2-B279-4241-9619-FD7E46F4C453}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{224990A2-B279-4241-9619-FD7E46F4C453}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{224990A2-B279-4241-9619-FD7E46F4C453}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9782E370-0162-43D1-B446-49564347E856} = {26FCD4EA-8B49-4F8E-8E68-C63576940F0C}
+		{485463C1-D818-42CD-BDA7-C50AAF8DACB2} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{62134B26-4B1F-420E-9704-1A1D89A795FC} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{402672B1-7EA0-48BD-A29C-D874F14F3657} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{224990A2-B279-4241-9619-FD7E46F4C453} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 	EndGlobalSection
 EndGlobal
