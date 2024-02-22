@@ -2,47 +2,57 @@ using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using Amazon.Lambda.SQSEvents;
+using Amazon.S3;
+using Amazon.SQS;
+using AssocationRegistry.KboMutations;
+using Microsoft.Extensions.Configuration;
 
 namespace AssociationRegistry.KboMutations.MutationFileLambda;
 
 public class Function
 {
-    /// <summary>
-    /// The main entry point for the Lambda function. The main function is called once during the Lambda init phase. It
-    /// initializes the .NET Lambda runtime client passing in the function handler to invoke for each Lambda event and
-    /// the JSON serializer to use for converting Lambda JSON format to the .NET types. 
-    /// </summary>
+    private static MessageProcessor? _processor;
+
     private static async Task Main()
     {
-        Func<string, ILambdaContext, string> handler = FunctionHandler;
+        var s3Client = new AmazonS3Client();
+        var sqsClient = new AmazonSQSClient();
+
+        var configurationBuilder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .AddEnvironmentVariables();
+
+        var awsConfigurationSection = configurationBuilder
+            .Build()
+            .GetSection("AWS");
+
+        _processor = new MessageProcessor(s3Client, sqsClient, new AmazonKboSyncConfiguration
+        {
+            MutationFileBucketUrl = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
+            MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
+            SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
+        });
+        
+        var handler = FunctionHandler;
         await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
             .Build()
             .RunAsync();
     }
 
     /// <summary>
-    /// A simple function that takes a string and does a ToUpper.
-    ///
-    /// To use this handler to respond to an AWS event, reference the appropriate package from 
-    /// https://github.com/aws/aws-lambda-dotnet#events
-    /// and change the string input parameter to the desired event type. When the event type
-    /// is changed, the handler type registered in the main method needs to be updated and the LambdaFunctionJsonSerializerContext 
-    /// defined below will need the JsonSerializable updated. If the return type and event type are different then the 
-    /// LambdaFunctionJsonSerializerContext must have two JsonSerializable attributes, one for each type.
-    ///
-    // When using Native AOT extra testing with the deployed Lambda functions is required to ensure
-    // the libraries used in the Lambda function work correctly with Native AOT. If a runtime 
-    // error occurs about missing types or methods the most likely solution will be to remove references to trim-unsafe 
-    // code or configure trimming options. This sample defaults to partial TrimMode because currently the AWS 
-    // SDK for .NET does not support trimming. This will result in a larger executable size, and still does not 
-    // guarantee runtime trimming errors won't be hit. 
+    ///     This method is called for every Lambda invocation. This method takes in an SQS event object and can be used
+    ///     to respond to SQS messages.
     /// </summary>
-    /// <param name="input"></param>
+    /// <param name="event"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public static string FunctionHandler(string input, ILambdaContext context)
+    public static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
-        return input.ToUpper();
+        context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
+        await _processor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
+        context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
     }
 }
 
@@ -52,6 +62,7 @@ public class Function
 /// from the JSON serializer unable to find the serialization information for unknown types.
 /// </summary>
 [JsonSerializable(typeof(string))]
+[JsonSerializable(typeof(SQSEvent))]
 public partial class LambdaFunctionJsonSerializerContext : JsonSerializerContext
 {
     // By using this partial class derived from JsonSerializerContext, we can generate reflection free JSON Serializer code at compile time

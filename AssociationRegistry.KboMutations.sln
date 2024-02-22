@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{AB1680A9-D96D-4EA3-B473-1AD901553E99}"
-	ProjectSection(SolutionItems) = preProject
-		paket.dependencies = paket.dependencies
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{268595C7-F542-4261-A2FF-58E275A88CC0}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
+		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		deploy.local.sh = deploy.local.sh
+		Directory.Packages.props = Directory.Packages.props
+		docker-compose.yml = docker-compose.yml
+		invoke.local.sh = invoke.local.sh
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -26,17 +26,70 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46991FC7-44B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4233CA41-24DE-4196-8A13-D4AF5B2B330A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationLambda", "src\AssociationRegistry.KboMutations.MutationLambda\AssociationRegistry.KboMutations.MutationLambda.csproj", "{485463C1-D818-42CD-BDA7-C50AAF8DACB2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".localstack", ".localstack", "{670B244A-7CB7-4C34-81E6-FBF6516EE355}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationFileLambda", "src\AssociationRegistry.KboMutations.MutationFileLambda\AssociationRegistry.KboMutations.MutationFileLambda.csproj", "{62134B26-4B1F-420E-9704-1A1D89A795FC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "init", "init", "{D2DD7A61-4C36-4004-AF1A-697939D29480}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.SyncLambda", "src\AssociationRegistry.KboMutations.SyncLambda\AssociationRegistry.KboMutations.SyncLambda.csproj", "{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "boot", "boot", "{1D1F05BC-3180-40DD-9F26-33D53DC86CCD}"
+	ProjectSection(SolutionItems) = preProject
+		.localstack\init\boot.d\update-bin.sh = .localstack\init\boot.d\update-bin.sh
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationFileLambda.Tests", "test\AssociationRegistry.KboMutations.MutationFileLambda.Tests\AssociationRegistry.KboMutations.MutationFileLambda.Tests.csproj", "{402672B1-7EA0-48BD-A29C-D874F14F3657}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ready", "ready", "{F2DC02B4-7427-4002-9CA8-808599FDCBAC}"
+	ProjectSection(SolutionItems) = preProject
+		.localstack\init\ready.d\01_s3-init.sh = .localstack\init\ready.d\01_s3-init.sh
+		.localstack\init\ready.d\01_sqs-init.sh = .localstack\init\ready.d\01_sqs-init.sh
+		.localstack\init\ready.d\02_s3-persistent-data.sh = .localstack\init\ready.d\02_s3-persistent-data.sh
+		.localstack\init\ready.d\03_lambda-mutation.sh = .localstack\init\ready.d\03_lambda-mutation.sh
+		.localstack\init\ready.d\03_lambda-mutationfile.sh = .localstack\init\ready.d\03_lambda-mutationfile.sh
+		.localstack\init\ready.d\03_lambda-sync.sh = .localstack\init\ready.d\03_lambda-sync.sh
+		.localstack\init\ready.d\lambda-mutation-rule-policy.json = .localstack\init\ready.d\lambda-mutation-rule-policy.json
+		.localstack\init\ready.d\lambda-mutationfile-rule-policy.json = .localstack\init\ready.d\lambda-mutationfile-rule-policy.json
+		.localstack\init\ready.d\lambda-sync-rule-policy.json = .localstack\init\ready.d\lambda-sync-rule-policy.json
+		.localstack\init\ready.d\01_sqs-init.redrive-mutation-file.json = .localstack\init\ready.d\01_sqs-init.redrive-mutation-file.json
+		.localstack\init\ready.d\01_sqs-init.redrive-sync.json = .localstack\init\ready.d\01_sqs-init.redrive-sync.json
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambda.Tests", "test\AssociationRegistry.KboMutations.MutationLambda.Tests\AssociationRegistry.KboMutations.MutationLambda.Tests.csproj", "{224990A2-B279-4241-9619-FD7E46F4C453}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shutdown", "shutdown", "{86D24D16-1C11-47CF-9A6C-DA2E85DEE23F}"
+	ProjectSection(SolutionItems) = preProject
+		.localstack\init\shutdown.d\02_s3-persistent-data.sh = .localstack\init\shutdown.d\02_s3-persistent-data.sh
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.SyncLambda.Tests", "test\AssociationRegistry.KboMutations.SyncLambda.Tests\AssociationRegistry.KboMutations.SyncLambda.Tests.csproj", "{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "start", "start", "{3146BFF2-8A1E-49A0-BEE3-34297050485E}"
+	ProjectSection(SolutionItems) = preProject
+		.localstack\init\start.d\dummy.sh = .localstack\init\start.d\dummy.sh
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationFileLambda", "src\AssociationRegistry.KboMutations.MutationFileLambda\AssociationRegistry.KboMutations.MutationFileLambda.csproj", "{068168C4-A1DB-4952-8649-44420B91AA03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationLambda", "src\AssociationRegistry.KboMutations.MutationLambda\AssociationRegistry.KboMutations.MutationLambda.csproj", "{06DC051A-102E-4291-9DA7-E51E7D808357}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.SyncLambda", "src\AssociationRegistry.KboMutations.SyncLambda\AssociationRegistry.KboMutations.SyncLambda.csproj", "{CD602682-F824-460E-BAB1-75BEE0700977}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationFileLambda.Tests", "test\AssociationRegistry.KboMutations.MutationFileLambda.Tests\AssociationRegistry.KboMutations.MutationFileLambda.Tests.csproj", "{2D584510-0DCD-477A-A72E-098A7749197D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationLambda.Tests", "test\AssociationRegistry.KboMutations.MutationLambda.Tests\AssociationRegistry.KboMutations.MutationLambda.Tests.csproj", "{DD4742A9-3574-4069-9B18-5B52F8057048}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.SyncLambda.Tests", "test\AssociationRegistry.KboMutations.SyncLambda.Tests\AssociationRegistry.KboMutations.SyncLambda.Tests.csproj", "{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lambda", "lambda", "{4FADDBD7-41D6-4C73-9EEB-32036912878F}"
+	ProjectSection(SolutionItems) = preProject
+		.localstack\lambda\mutation.zip = .localstack\lambda\mutation.zip
+		.localstack\lambda\mutationfile.zip = .localstack\lambda\mutationfile.zip
+		.localstack\lambda\sync.zip = .localstack\lambda\sync.zip
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations", "src\AssociationRegistry.KboMutations\AssociationRegistry.KboMutations.csproj", "{147E5EE9-7A24-46FB-B2A3-76FC52460A58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.Tests", "test\AssociationRegistry.KboMutations.Tests\AssociationRegistry.KboMutations.Tests.csproj", "{6A51E44A-626E-4CBA-8369-DC2C47B9C649}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry", "..\association-registry\src\AssociationRegistry\AssociationRegistry.csproj", "{D95EAB66-3341-4084-982D-CF999C5DC99B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.Integration.Tests", "test\AssociationRegistry.KboMutations.Integration.Tests\AssociationRegistry.KboMutations.Integration.Tests.csproj", "{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer", "src\AssociationRegistry.KboMutations.MutationLambdaContainer\AssociationRegistry.KboMutations.MutationLambdaContainer.csproj", "{13DA2E01-E14C-44A3-A054-6EF78350137F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer.Tests", "test\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests.csproj", "{B5B2747A-1205-454A-B8AD-F09843ECA906}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,41 +97,77 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{485463C1-D818-42CD-BDA7-C50AAF8DACB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62134B26-4B1F-420E-9704-1A1D89A795FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{402672B1-7EA0-48BD-A29C-D874F14F3657}.Release|Any CPU.Build.0 = Release|Any CPU
-		{224990A2-B279-4241-9619-FD7E46F4C453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{224990A2-B279-4241-9619-FD7E46F4C453}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{224990A2-B279-4241-9619-FD7E46F4C453}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{224990A2-B279-4241-9619-FD7E46F4C453}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{068168C4-A1DB-4952-8649-44420B91AA03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{068168C4-A1DB-4952-8649-44420B91AA03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{068168C4-A1DB-4952-8649-44420B91AA03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{068168C4-A1DB-4952-8649-44420B91AA03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06DC051A-102E-4291-9DA7-E51E7D808357}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06DC051A-102E-4291-9DA7-E51E7D808357}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06DC051A-102E-4291-9DA7-E51E7D808357}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06DC051A-102E-4291-9DA7-E51E7D808357}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD602682-F824-460E-BAB1-75BEE0700977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD602682-F824-460E-BAB1-75BEE0700977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD602682-F824-460E-BAB1-75BEE0700977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD602682-F824-460E-BAB1-75BEE0700977}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D584510-0DCD-477A-A72E-098A7749197D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D584510-0DCD-477A-A72E-098A7749197D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D584510-0DCD-477A-A72E-098A7749197D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D584510-0DCD-477A-A72E-098A7749197D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD4742A9-3574-4069-9B18-5B52F8057048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD4742A9-3574-4069-9B18-5B52F8057048}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD4742A9-3574-4069-9B18-5B52F8057048}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD4742A9-3574-4069-9B18-5B52F8057048}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{147E5EE9-7A24-46FB-B2A3-76FC52460A58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{147E5EE9-7A24-46FB-B2A3-76FC52460A58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{147E5EE9-7A24-46FB-B2A3-76FC52460A58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{147E5EE9-7A24-46FB-B2A3-76FC52460A58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A51E44A-626E-4CBA-8369-DC2C47B9C649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A51E44A-626E-4CBA-8369-DC2C47B9C649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A51E44A-626E-4CBA-8369-DC2C47B9C649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A51E44A-626E-4CBA-8369-DC2C47B9C649}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13DA2E01-E14C-44A3-A054-6EF78350137F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13DA2E01-E14C-44A3-A054-6EF78350137F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13DA2E01-E14C-44A3-A054-6EF78350137F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13DA2E01-E14C-44A3-A054-6EF78350137F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9782E370-0162-43D1-B446-49564347E856} = {26FCD4EA-8B49-4F8E-8E68-C63576940F0C}
-		{485463C1-D818-42CD-BDA7-C50AAF8DACB2} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
-		{62134B26-4B1F-420E-9704-1A1D89A795FC} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
-		{79C763C8-9692-44C0-AFFF-8B4A8E1B8CFD} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
-		{402672B1-7EA0-48BD-A29C-D874F14F3657} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
-		{224990A2-B279-4241-9619-FD7E46F4C453} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
-		{92B3ACA4-B8E5-4CFF-BD56-5B61C18BBEBD} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{D2DD7A61-4C36-4004-AF1A-697939D29480} = {670B244A-7CB7-4C34-81E6-FBF6516EE355}
+		{1D1F05BC-3180-40DD-9F26-33D53DC86CCD} = {D2DD7A61-4C36-4004-AF1A-697939D29480}
+		{F2DC02B4-7427-4002-9CA8-808599FDCBAC} = {D2DD7A61-4C36-4004-AF1A-697939D29480}
+		{86D24D16-1C11-47CF-9A6C-DA2E85DEE23F} = {D2DD7A61-4C36-4004-AF1A-697939D29480}
+		{3146BFF2-8A1E-49A0-BEE3-34297050485E} = {D2DD7A61-4C36-4004-AF1A-697939D29480}
+		{068168C4-A1DB-4952-8649-44420B91AA03} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{06DC051A-102E-4291-9DA7-E51E7D808357} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{CD602682-F824-460E-BAB1-75BEE0700977} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{2D584510-0DCD-477A-A72E-098A7749197D} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{DD4742A9-3574-4069-9B18-5B52F8057048} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{4FADDBD7-41D6-4C73-9EEB-32036912878F} = {670B244A-7CB7-4C34-81E6-FBF6516EE355}
+		{147E5EE9-7A24-46FB-B2A3-76FC52460A58} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{6A51E44A-626E-4CBA-8369-DC2C47B9C649} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{D95EAB66-3341-4084-982D-CF999C5DC99B} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{13DA2E01-E14C-44A3-A054-6EF78350137F} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
+		{B5B2747A-1205-454A-B8AD-F09843ECA906} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 	EndGlobalSection
 EndGlobal
