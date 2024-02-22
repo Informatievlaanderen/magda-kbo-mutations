@@ -12,9 +12,8 @@ using AssociationRegistry.KboMutations.Tests.Fixtures;
 using AutoFixture;
 using CsvHelper;
 using FluentAssertions;
-using Xunit.Abstractions;
 
-namespace AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMutatieBestand_In_Queue_And_S3.Fixtures;
+namespace AssociationRegistry.KboMutations.Integration.Tests.When_Localstack.Fixtures;
 
 public class With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture : WithLocalstackFixture
 {

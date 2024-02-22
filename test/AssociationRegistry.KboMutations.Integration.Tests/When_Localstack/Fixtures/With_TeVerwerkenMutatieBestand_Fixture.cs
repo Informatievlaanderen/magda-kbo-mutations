@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
 using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
@@ -7,23 +8,23 @@ using AssociationRegistry.KboMutations.MutationLambda.Configuration;
 using AssociationRegistry.KboMutations.MutationLambda.Ftps;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
 
-namespace AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMutatieBestand_In_Queue_And_S3.Fixtures;
+namespace AssociationRegistry.KboMutations.Integration.Tests.When_Localstack.Fixtures;
 
-public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixture
+public class With_TeVerwerkenMutatieBestand_Fixture : WithLocalstackFixture
 {
-    public With_TeVerwerkenMutatieBestand_FromLocalstack() : base(
+    public With_TeVerwerkenMutatieBestand_Fixture() : base(
         WellKnownBucketNames.MutationFileBucketName,
         WellKnownQueueNames.MutationFileQueueUrl,
         WellKnownQueueNames.SyncQueueUrl)
     {
-        
+        Logger = new TestLambdaLogger();
     }
     
     public IFtpsClient SecureFtpClient { get; private set; }
+    public ILambdaLogger Logger { get; init; }
 
     protected override async Task SetupAsync()
     {
-        var logger = new TestLambdaLogger();
         var sftpPath = "../../../../../sftp";
         var seedFolder = "seed";
         var inFolder = "files/in";
@@ -55,13 +56,14 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
         await ClearQueue(KboSyncConfiguration.MutationFileQueueUrl);
         await ClearQueue(KboSyncConfiguration.SyncQueueUrl);
 
-        SecureFtpClient = new CurlFtpsClient(logger, kboMutationsConfiguration);
+        SecureFtpClient = new CurlFtpsClient(Logger, kboMutationsConfiguration);
 
-        var mutatieBestandProcessor = new MutatieBestandProcessor(logger, SecureFtpClient, AmazonS3Client,
+        var mutatieBestandProcessor = new MutatieBestandProcessor(Logger, SecureFtpClient, AmazonS3Client,
             AmazonSqsClient, kboMutationsConfiguration,
             KboSyncConfiguration);
 
         await mutatieBestandProcessor.ProcessAsync();
+        
         ReceivedMessages = await FetchMessages(KboSyncConfiguration.SyncQueueUrl);
     }
 

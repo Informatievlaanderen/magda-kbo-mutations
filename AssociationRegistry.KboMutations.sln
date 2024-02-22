@@ -66,12 +66,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMuta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.SyncLambda", "src\AssociationRegistry.KboMutations.SyncLambda\AssociationRegistry.KboMutations.SyncLambda.csproj", "{CD602682-F824-460E-BAB1-75BEE0700977}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationFileLambda.Tests", "test\AssociationRegistry.KboMutations.MutationFileLambda.Tests\AssociationRegistry.KboMutations.MutationFileLambda.Tests.csproj", "{2D584510-0DCD-477A-A72E-098A7749197D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationLambda.Tests", "test\AssociationRegistry.KboMutations.MutationLambda.Tests\AssociationRegistry.KboMutations.MutationLambda.Tests.csproj", "{DD4742A9-3574-4069-9B18-5B52F8057048}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.SyncLambda.Tests", "test\AssociationRegistry.KboMutations.SyncLambda.Tests\AssociationRegistry.KboMutations.SyncLambda.Tests.csproj", "{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lambda", "lambda", "{4FADDBD7-41D6-4C73-9EEB-32036912878F}"
 	ProjectSection(SolutionItems) = preProject
 		.localstack\lambda\mutation.zip = .localstack\lambda\mutation.zip
@@ -88,8 +82,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.Integration.Tests", "test\AssociationRegistry.KboMutations.Integration.Tests\AssociationRegistry.KboMutations.Integration.Tests.csproj", "{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer", "src\AssociationRegistry.KboMutations.MutationLambdaContainer\AssociationRegistry.KboMutations.MutationLambdaContainer.csproj", "{13DA2E01-E14C-44A3-A054-6EF78350137F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer.Tests", "test\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests.csproj", "{B5B2747A-1205-454A-B8AD-F09843ECA906}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,18 +101,6 @@ Global
 		{CD602682-F824-460E-BAB1-75BEE0700977}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD602682-F824-460E-BAB1-75BEE0700977}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD602682-F824-460E-BAB1-75BEE0700977}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D584510-0DCD-477A-A72E-098A7749197D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D584510-0DCD-477A-A72E-098A7749197D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D584510-0DCD-477A-A72E-098A7749197D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D584510-0DCD-477A-A72E-098A7749197D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD4742A9-3574-4069-9B18-5B52F8057048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD4742A9-3574-4069-9B18-5B52F8057048}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD4742A9-3574-4069-9B18-5B52F8057048}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD4742A9-3574-4069-9B18-5B52F8057048}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{147E5EE9-7A24-46FB-B2A3-76FC52460A58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{147E5EE9-7A24-46FB-B2A3-76FC52460A58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{147E5EE9-7A24-46FB-B2A3-76FC52460A58}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -141,10 +121,6 @@ Global
 		{13DA2E01-E14C-44A3-A054-6EF78350137F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13DA2E01-E14C-44A3-A054-6EF78350137F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13DA2E01-E14C-44A3-A054-6EF78350137F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5B2747A-1205-454A-B8AD-F09843ECA906}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,15 +135,11 @@ Global
 		{068168C4-A1DB-4952-8649-44420B91AA03} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{06DC051A-102E-4291-9DA7-E51E7D808357} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{CD602682-F824-460E-BAB1-75BEE0700977} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
-		{2D584510-0DCD-477A-A72E-098A7749197D} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
-		{DD4742A9-3574-4069-9B18-5B52F8057048} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
-		{CF0CF926-9D20-4424-8B2E-56F1B4DC04A1} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 		{4FADDBD7-41D6-4C73-9EEB-32036912878F} = {670B244A-7CB7-4C34-81E6-FBF6516EE355}
 		{147E5EE9-7A24-46FB-B2A3-76FC52460A58} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{6A51E44A-626E-4CBA-8369-DC2C47B9C649} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 		{D95EAB66-3341-4084-982D-CF999C5DC99B} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 		{13DA2E01-E14C-44A3-A054-6EF78350137F} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
-		{B5B2747A-1205-454A-B8AD-F09843ECA906} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 	EndGlobalSection
 EndGlobal

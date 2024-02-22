@@ -1,16 +1,16 @@
 ﻿using System.Text.Json;
 using AssocationRegistry.KboMutations.Messages;
-using AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMutatieBestand_In_Queue_And_S3.Fixtures;
+using AssociationRegistry.KboMutations.Integration.Tests.When_Localstack.Fixtures;
 using FluentAssertions;
 using Xunit;
 
-namespace AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMutatieBestand_In_Queue_And_S3;
+namespace AssociationRegistry.KboMutations.Integration.Tests.When_Localstack;
 
-public class When_Running_The_Lambda : IClassFixture<With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture>
+public class With_TeVerwerkenMutatieBestand_In_Queue_And_S3 : IClassFixture<With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture>
 {
     private readonly With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture _fixture;
 
-    public When_Running_The_Lambda(With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture fixture)
+    public With_TeVerwerkenMutatieBestand_In_Queue_And_S3(With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture fixture)
     {
         _fixture = fixture;
     }
