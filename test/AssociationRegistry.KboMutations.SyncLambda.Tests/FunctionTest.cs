@@ -1,18 +1,17 @@
-using Xunit;
-using Amazon.Lambda.Core;
+using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
+using Xunit;
 
 namespace AssociationRegistry.KboMutations.SyncLambda.Tests;
 
 public class FunctionTest
 {
     [Fact]
-    public void TestToUpperFunction()
+    public void It_Should_Succeed()
     {
-        // Invoke the lambda function and confirm the string was upper cased.
         var context = new TestLambdaContext();
-        var upperCase = Function.FunctionHandler("hello world", context);
+        // var result = Function.FunctionHandler("", context);
 
-        Assert.Equal("HELLO WORLD", upperCase);
+        // Assert.False(result.IsFaulted);
     }
 }

@@ -261,16 +261,6 @@ jobs:
       - name: Parse repository name
         run: echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//") >> $GITHUB_ENV
         shell: bash
-
-      - name: Cache Paket
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-paket
-        with:
-          path: packages
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('paket.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
             
       - name: Cache Python
         uses: actions/cache@v3
@@ -304,14 +294,6 @@ jobs:
         shell: bash
         run: |
           dotnet tool restore
-
-      - name: Paket install
-        shell: bash
-        run: dotnet paket install
-
-      - name: Paket restore
-        shell: bash
-        run: dotnet paket restore
 
       - name: Publish to Confluence
         if: needs.set-release-version.outputs.version != 'none'
