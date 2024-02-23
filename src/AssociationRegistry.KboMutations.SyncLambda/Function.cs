@@ -3,42 +3,49 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SQSEvents;
-using Amazon.S3;
-using Amazon.SQS;
-using AssocationRegistry.KboMutations;
+using AssociationRegistry.EventStore;
+using Marten;
 using Microsoft.Extensions.Configuration;
 
 namespace AssociationRegistry.KboMutations.SyncLambda;
 
 public class Function
 {
-    private static MessageProcessor? _processor;
+    internal static IConfiguration Configuration;
+    internal static MessageProcessor MessageProcessor;
 
     private static async Task Main()
     {
-        var s3Client = new AmazonS3Client();
-        var sqsClient = new AmazonSQSClient();
-
-        var configurationBuilder = new ConfigurationBuilder()
+        Configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", true, true)
-            .AddEnvironmentVariables();
+            .AddEnvironmentVariables()
+            .Build();
 
-        var awsConfigurationSection = configurationBuilder
-            .Build()
-            .GetSection("AWS");
+        MessageProcessor = ConfigureMessageProcessor();
 
-        _processor = new MessageProcessor(s3Client, sqsClient, new AmazonKboSyncConfiguration
-        {
-            MutationFileBucketUrl = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
-            MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
-            SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
-        });
-        
         var handler = FunctionHandler;
         await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
             .Build()
             .RunAsync();
+    }
+
+    private static MessageProcessor ConfigureMessageProcessor()
+    {
+        var awsConfigurationSection = Configuration
+            .GetSection("AWS");
+
+        var magdaGeefVerenigingService = new MagdaGeefVerenigingService();
+        
+        var verenigingsRepository = new VerenigingsRepository(
+            new EventStore.EventStore(
+                new DocumentStore(
+                    new StoreOptions
+                    {
+                        
+                    })));
+
+        return new MessageProcessor(magdaGeefVerenigingService, verenigingsRepository);
     }
 
     /// <summary>
@@ -51,7 +58,7 @@ public class Function
     private static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
-        await _processor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
+        await MessageProcessor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
     }
 }

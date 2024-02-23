@@ -1,99 +1,90 @@
-using System.Globalization;
 using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
-using Amazon.S3;
-using Amazon.SQS;
-using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Messages;
-using AssocationRegistry.KboMutations.Models;
-using CsvHelper;
-using CsvHelper.Configuration;
+using AssociationRegistry.Framework;
+using AssociationRegistry.Kbo;
+using AssociationRegistry.Vereniging;
+using NodaTime.Extensions;
+using ResultNet;
 
 namespace AssociationRegistry.KboMutations.SyncLambda;
 
 public class MessageProcessor
 {
-    private readonly AmazonKboSyncConfiguration _amazonKboSyncConfiguration;
-    private readonly IAmazonS3 _s3Client;
-    private readonly IAmazonSQS _sqsClient;
+    private readonly IMagdaGeefVerenigingService _magdaGeefVerenigingService;
+    private readonly IVerenigingsRepository _verenigingsRepository;
 
-    public MessageProcessor(IAmazonS3 s3Client, IAmazonSQS sqsClient, AmazonKboSyncConfiguration amazonKboSyncConfiguration)
+    public MessageProcessor(IMagdaGeefVerenigingService magdaGeefVerenigingService, IVerenigingsRepository verenigingsRepository)
     {
-        _s3Client = s3Client;
-        _sqsClient = sqsClient;
-        _amazonKboSyncConfiguration = amazonKboSyncConfiguration;
+        _magdaGeefVerenigingService = magdaGeefVerenigingService;
+        _verenigingsRepository = verenigingsRepository;
     }
 
-    public async Task ProcessMessage(SQSEvent sqsEvent, 
+    public async Task ProcessMessage(SQSEvent sqsEvent,
         ILambdaLogger contextLogger,
         CancellationToken cancellationToken)
     {
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileBucketUrl)}:{_amazonKboSyncConfiguration.MutationFileBucketUrl}");
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileQueueUrl)}:{_amazonKboSyncConfiguration.MutationFileQueueUrl}");
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.SyncQueueUrl)}:{_amazonKboSyncConfiguration.SyncQueueUrl}");
-
         foreach (var record in sqsEvent.Records)
         {
-            contextLogger.LogInformation("Processing record body: " + record.Body);   
-            
-            var message = JsonSerializer.Deserialize<TeVerwerkenMutatieBestandMessage>(record.Body);
-            
-            await Handle(contextLogger, message, cancellationToken);
+            contextLogger.LogInformation("Processing record body: " + record.Body);
+
+            var message = JsonSerializer.Deserialize<TeSynchroniserenKboNummerMessage>(record.Body);
+
+            await Handle(contextLogger, message, Guid.NewGuid(), cancellationToken);
         }
     }
 
-    private async Task Handle(ILambdaLogger contextLogger, 
-        TeVerwerkenMutatieBestandMessage? message,
+    private async Task Handle(ILambdaLogger logger,
+        TeSynchroniserenKboNummerMessage? message,
+        Guid correlationId,
         CancellationToken cancellationToken)
     {
-        var fetchMutatieBestandResponse = await _s3Client.GetObjectAsync(
-            _amazonKboSyncConfiguration.MutationFileBucketUrl, 
-            message.Key, 
-            cancellationToken);
- 
-        var content = await FetchMutationFileContent(fetchMutatieBestandResponse.ResponseStream, cancellationToken);
+        var kboNummer = KboNummer.Create(message.KboNummer!);
 
-        contextLogger.LogInformation($"MutatieBestand found");
+        var (verenigingVolgensKbo, verenigingMetRechtspersoonlijkheid) = GetVerenigingData(logger, kboNummer, correlationId, cancellationToken);
         
-        var mutatielijnen = ReadMutationLines(contextLogger, content);
-
-        contextLogger.LogInformation($"Found {mutatielijnen.Count} mutatielijnen");
-        
-        foreach (var mutatielijn in mutatielijnen)
-        {
-            contextLogger.LogInformation($"Sending {mutatielijn.Ondernemingsnummer} to synchronize queue");
-            
-            var messageBody = JsonSerializer.Serialize(new TeSynchroniserenKboNummerMessage(mutatielijn.Ondernemingsnummer, fetchMutatieBestandResponse.Key));
-            
-            await _sqsClient.SendMessageAsync(_amazonKboSyncConfiguration.SyncQueueUrl, messageBody, cancellationToken);
-        }
-
-        await _s3Client.DeleteObjectAsync(_amazonKboSyncConfiguration.MutationFileBucketUrl, message.Key, cancellationToken);
+        // TODO : Implementatie voor het berekenen van de diff tussen beiden
     }
 
-    private static async Task<string> FetchMutationFileContent(
-        Stream mutatieBestandStream, 
-        CancellationToken cancellationToken)
+    private (VerenigingVolgensKbo, VerenigingMetRechtspersoonlijkheid) GetVerenigingData(ILambdaLogger logger, KboNummer kboNummer, Guid correlationId, CancellationToken cancellationToken)
     {
-        using var reader = new StreamReader(mutatieBestandStream);
+        var verenigingFromMagdaTask = GetVerenigingFromMagda(logger, kboNummer, correlationId, cancellationToken);
+        var verenigingFromRepositoryTask = GetVerenigingFromRepository(logger, kboNummer, cancellationToken);
 
-        return await reader.ReadToEndAsync(cancellationToken);
+        // Load simultaneous from both MAGDA and our repository
+        Task.WaitAll(new Task[]
+        {
+            verenigingFromMagdaTask,
+            verenigingFromRepositoryTask
+        }, cancellationToken);
+
+        var verenigingFromMagda = verenigingFromMagdaTask.Result.Data;
+        var verenigingFromRepository = verenigingFromRepositoryTask.Result;
+
+        return (verenigingFromMagda, verenigingFromRepository);
     }
 
-    private static List<MutatieLijn> ReadMutationLines(
-        ILambdaLogger contextLogger, 
-        string content)
+    private async Task<Result<VerenigingVolgensKbo>> GetVerenigingFromMagda(ILambdaLogger logger, KboNummer kboNummer, Guid correlationId, CancellationToken cancellationToken)
     {
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            HasHeaderRecord = true,
-            MissingFieldFound = null
-        };
+        logger.LogInformation($"Calling {nameof(IMagdaGeefVerenigingService)}.{nameof(IMagdaGeefVerenigingService.GeefVereniging)} for KBO '{kboNummer}'");
+        var response = await _magdaGeefVerenigingService.GeefVereniging(kboNummer, new CommandMetadata("KBO", DateTime.UtcNow.ToInstant(), correlationId), cancellationToken);
 
-        using var stringReader = new StringReader(content);
-        using var csv = new CsvReader(stringReader, config);
-        
-        return csv.GetRecords<MutatieLijn>().ToList();
+        return response;
+    }
+
+    private async Task<VerenigingMetRechtspersoonlijkheid> GetVerenigingFromRepository(ILambdaLogger logger, KboNummer kboNummer, CancellationToken cancellationToken)
+    {
+        logger.LogInformation($"Calling {nameof(IVerenigingsRepository)}.{nameof(IVerenigingsRepository.GetVCodeAndNaam)} for KBO '{kboNummer}'");
+        var vCodeAndNaamResponse = await _verenigingsRepository.GetVCodeAndNaam(kboNummer);
+
+        if (vCodeAndNaamResponse is null || vCodeAndNaamResponse.VCode is null) throw new ApplicationException($"Could not find VCode and Name for KBO number {kboNummer}");
+
+        var vCode = VCode.Create(vCodeAndNaamResponse.VCode);
+
+        logger.LogInformation($"Calling {nameof(IVerenigingsRepository)}.{nameof(IVerenigingsRepository.Load)} for VCode '{vCodeAndNaamResponse.VCode}' known as '{vCodeAndNaamResponse.VerenigingsNaam}'");
+        var response = await _verenigingsRepository.Load<VerenigingMetRechtspersoonlijkheid>(vCode, null);
+
+        return response;
     }
 }

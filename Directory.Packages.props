@@ -3,6 +3,9 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Be.Vlaanderen.Basisregisters.AssociationRegistry" Version="8.69.1" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageVersion Include="Amazon.Lambda.TestUtilities" Version="2.0.0" />
     <PackageVersion Include="AutoBogus" Version="2.13.1" />
     <PackageVersion Include="Amazon.Lambda.RuntimeSupport" Version="1.10.0" />
