@@ -1,4 +1,3 @@
-using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
 using Xunit;
 

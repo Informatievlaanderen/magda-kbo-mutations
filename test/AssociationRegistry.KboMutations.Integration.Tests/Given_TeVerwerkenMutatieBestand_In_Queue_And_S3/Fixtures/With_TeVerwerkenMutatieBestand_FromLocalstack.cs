@@ -2,10 +2,22 @@
 using Amazon.Lambda.TestUtilities;
 using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
-using AssociationRegistry.KboMutations.MutationLambda;
-using AssociationRegistry.KboMutations.MutationLambda.Configuration;
-using AssociationRegistry.KboMutations.MutationLambda.Ftps;
+using AssociationRegistry.EventStore;
+using AssociationRegistry.Framework;
+using AssociationRegistry.Kbo;
+using AssociationRegistry.KboMutations.MutationLambdaContainer;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
+using AssociationRegistry.Vereniging;
+using AutoBogus;
+using FluentAssertions;
+using Marten;
+using Marten.Events;
+using NodaTime;
+using Npgsql;
+using Weasel.Core;
 
 namespace AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMutatieBestand_In_Queue_And_S3.Fixtures;
 
@@ -50,8 +62,11 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
             KeyType = "DER",
             LockEnabled = false,
             CurlLocation = "curl",
+            AdditionalParams = "-k"
         };
         
+        await SeedVerenigingen(new[]{ "0442528054", "0000000097"});
+
         await ClearQueue(KboSyncConfiguration.MutationFileQueueUrl);
         await ClearQueue(KboSyncConfiguration.SyncQueueUrl);
 
@@ -62,7 +77,50 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
             KboSyncConfiguration);
 
         await mutatieBestandProcessor.ProcessAsync();
-        ReceivedMessages = await FetchMessages(KboSyncConfiguration.SyncQueueUrl);
+        // ReceivedMessages = await FetchMessages(KboSyncConfiguration.SyncQueueUrl);
+    }
+
+    private static async Task SeedVerenigingen(IEnumerable<string> kboNummersToSeed)
+    {
+        var documentStore = DocumentStore.For(opts =>
+        {
+            var connectionStringBuilder = new NpgsqlConnectionStringBuilder();
+            connectionStringBuilder.Host = "localhost";
+            connectionStringBuilder.Database = "verenigingsregister";
+            connectionStringBuilder.Username = "root";
+            connectionStringBuilder.Password = "root";
+
+            opts.Connection(connectionStringBuilder.ToString());
+            opts.Events.StreamIdentity = StreamIdentity.AsString;
+            // opts.Serializer(CreateCustomMartenSerializer());
+            opts.Events.MetadataConfig.EnableAll();
+            opts.AutoCreateSchemaObjects = AutoCreate.All;
+        });
+        
+        await documentStore.Storage.ApplyAllConfiguredChangesToDatabaseAsync();
+        
+        await documentStore.Storage.Database.DeleteAllEventDataAsync();
+
+        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore));
+        foreach (var (kboNummer, i) in kboNummersToSeed.Select((x,y) => (x,y)))
+        {
+            var verenigingMetRechtspersoonlijkheid = VerenigingMetRechtspersoonlijkheid.Registreer(
+                VCode.Create(1001 + i),
+                new VerenigingVolgensKbo
+                {
+                    KboNummer = KboNummer.Create(kboNummer),
+                    Adres = new AdresVolgensKbo(),
+                    Contactgegevens = new ContactgegevensVolgensKbo(),
+                    Naam = $"Bedrijf {kboNummer}",
+                    Startdatum = DateOnly.MinValue,
+                    Type = Verenigingstype.VZW,
+                    Vertegenwoordigers = Array.Empty<VertegenwoordigerVolgensKbo>(),
+                    KorteNaam = $"{{B-{kboNummer}}}"
+                });
+            var result = await repo.Save(verenigingMetRechtspersoonlijkheid, new CommandMetadata("OVO002949", new Instant(), Guid.NewGuid()));
+
+            result.Sequence.Should().BeGreaterThan(0);
+        }
     }
 
     public async Task<List<Message>> FetchMessages(string syncQueueUrl)

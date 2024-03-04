@@ -15,11 +15,13 @@
         <PackageReference Include="Amazon.Lambda.TestUtilities"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="xunit"/>
+        <PackageReference Include="NodaTime"/>
+        <PackageReference Include="Marten"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\AssociationRegistry.KboMutations.MutationFileLambda\AssociationRegistry.KboMutations.MutationFileLambda.csproj"/>
-        <ProjectReference Include="..\..\src\AssociationRegistry.KboMutations.MutationLambda\AssociationRegistry.KboMutations.MutationLambda.csproj" />
+        <ProjectReference Include="..\..\src\AssociationRegistry.KboMutations.MutationLambdaContainer\AssociationRegistry.KboMutations.MutationLambdaContainer.csproj" />
         <ProjectReference Include="..\AssociationRegistry.KboMutations.Tests\AssociationRegistry.KboMutations.Tests.csproj"/>
     </ItemGroup>
 

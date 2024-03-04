@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
@@ -14,31 +15,14 @@ public class Function
 {
     private static MessageProcessor? _processor;
 
-    private static async Task Main()
+    private static async Task<int> Main()
     {
-        var s3Client = new AmazonS3Client();
-        var sqsClient = new AmazonSQSClient();
-
-        var configurationBuilder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true)
-            .AddEnvironmentVariables();
-
-        var awsConfigurationSection = configurationBuilder
-            .Build()
-            .GetSection("AWS");
-
-        _processor = new MessageProcessor(s3Client, sqsClient, new AmazonKboSyncConfiguration
-        {
-            MutationFileBucketUrl = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
-            MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
-            SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
-        });
-        
         var handler = FunctionHandler;
         await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
             .Build()
             .RunAsync();
+
+        return 0;
     }
 
     /// <summary>
@@ -50,9 +34,48 @@ public class Function
     /// <returns></returns>
     public static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
+        var s3Client = new AmazonS3Client();
+        var sqsClient = new AmazonSQSClient();
+        
+        var configurationBuilder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .AddEnvironmentVariables();
+
+        var amazonKboSyncConfiguration = GetAmazonKboSyncConfiguration(configurationBuilder);
+
+        context.Logger.LogInformation(JsonSerializer.Serialize(@event));
+
+        _processor = new MessageProcessor(s3Client, sqsClient, amazonKboSyncConfiguration);
+        
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
         await _processor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
+    }
+
+    private static AmazonKboSyncConfiguration GetAmazonKboSyncConfiguration(IConfigurationBuilder configurationBuilder)
+    {
+        var awsConfigurationSection = configurationBuilder
+            .Build()
+            .GetSection("AWS");
+
+        var amazonKboSyncConfiguration = new AmazonKboSyncConfiguration
+        {
+            MutationFileBucketUrl = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
+            MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
+            SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
+        };
+
+        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.SyncQueueUrl))
+            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.SyncQueueUrl)} cannot be null or empty");
+        
+        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.MutationFileQueueUrl))
+            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.MutationFileQueueUrl)} cannot be null or empty");
+        
+        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.MutationFileBucketUrl))
+            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.MutationFileBucketUrl)} cannot be null or empty");
+        
+        return amazonKboSyncConfiguration;
     }
 }
 
@@ -61,7 +84,6 @@ public class Function
 /// There must be a JsonSerializable attribute for each type used as the input and return type or a runtime error will occur 
 /// from the JSON serializer unable to find the serialization information for unknown types.
 /// </summary>
-[JsonSerializable(typeof(string))]
 [JsonSerializable(typeof(SQSEvent))]
 public partial class LambdaFunctionJsonSerializerContext : JsonSerializerContext
 {

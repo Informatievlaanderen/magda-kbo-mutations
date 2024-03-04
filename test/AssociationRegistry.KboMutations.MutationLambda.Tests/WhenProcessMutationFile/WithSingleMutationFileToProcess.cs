@@ -1,5 +1,4 @@
 ﻿using AssociationRegistry.KboMutations.MutationLambda.Tests.WhenProcessMutationFile.Fixtures;
-using Moq;
 using Xunit;
 
 namespace AssociationRegistry.KboMutations.MutationLambda.Tests.WhenProcessMutationFile;
