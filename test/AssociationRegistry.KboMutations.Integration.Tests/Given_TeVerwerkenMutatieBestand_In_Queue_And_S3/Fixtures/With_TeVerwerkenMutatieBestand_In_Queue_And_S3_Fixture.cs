@@ -7,12 +7,20 @@ using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Messages;
 using AssocationRegistry.KboMutations.Models;
+using AssociationRegistry.EventStore;
+using AssociationRegistry.Framework;
+using AssociationRegistry.Kbo;
 using AssociationRegistry.KboMutations.Tests.Customizations;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
+using AssociationRegistry.Vereniging;
 using AutoFixture;
 using CsvHelper;
 using FluentAssertions;
-using Xunit.Abstractions;
+using Marten;
+using Marten.Events;
+using NodaTime;
+using Npgsql;
+using Weasel.Core;
 
 namespace AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMutatieBestand_In_Queue_And_S3.Fixtures;
 
@@ -35,6 +43,46 @@ public class With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture : WithLocals
 
     protected override async Task SetupAsync()
     {
+        var documentStore = DocumentStore.For(opts =>
+        {
+            var connectionStringBuilder = new NpgsqlConnectionStringBuilder();
+            connectionStringBuilder.Host = "localhost";
+            connectionStringBuilder.Database = "verenigingsregister";
+            connectionStringBuilder.Username = "root";
+            connectionStringBuilder.Password = "root";
+
+            opts.Connection(connectionStringBuilder.ToString());
+            opts.Events.StreamIdentity = StreamIdentity.AsString;
+            // opts.Serializer(CreateCustomMartenSerializer());
+            opts.Events.MetadataConfig.EnableAll();
+            opts.AutoCreateSchemaObjects = AutoCreate.All;
+        });
+        
+        await documentStore.Storage.ApplyAllConfiguredChangesToDatabaseAsync();
+        
+        await documentStore.Storage.Database.DeleteAllEventDataAsync();
+
+        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore));
+
+        foreach (var (lijn, i) in MutatieLijnen.Select(((lijn, i) => (lijn, i))))
+        {
+            var result = await repo.Save(VerenigingMetRechtspersoonlijkheid.Registreer(
+                VCode.Create(1001 + i),
+                new VerenigingVolgensKbo
+                {
+                    KboNummer = KboNummer.Create(lijn.Ondernemingsnummer),
+                    Adres = new AdresVolgensKbo(),
+                    Contactgegevens = new ContactgegevensVolgensKbo(),
+                    Naam = "Test",
+                    Startdatum = DateOnly.MinValue,
+                    Type = Verenigingstype.VZW,
+                    Vertegenwoordigers = Array.Empty<VertegenwoordigerVolgensKbo>(),
+                    KorteNaam = "T"
+                }), new CommandMetadata("OVO000001", new Instant(), Guid.NewGuid()));
+
+            result.Sequence.Should().BeGreaterThan(0);
+        }
+
         await ClearQueue(KboSyncConfiguration.MutationFileQueueUrl);
         await ClearQueue(KboSyncConfiguration.SyncQueueUrl);
         
@@ -46,7 +94,7 @@ public class With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture : WithLocals
             TeVerwerkenMutatieBestandMessage, 
             KboSyncConfiguration.MutationFileQueueUrl);
         
-        ReceivedMessages = await FetchMessages();
+        // ReceivedMessages = await FetchMessages();
     }
 
     public async Task<List<Message>> FetchMessages()

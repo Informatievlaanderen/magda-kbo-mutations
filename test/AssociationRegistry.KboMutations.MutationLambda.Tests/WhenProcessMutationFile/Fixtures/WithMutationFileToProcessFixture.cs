@@ -1,11 +1,10 @@
 ﻿using Amazon.Lambda.Core;
-using Amazon.Lambda.TestUtilities;
 using Amazon.S3;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
-using AssociationRegistry.KboMutations.MutationLambda.Configuration;
-using AssociationRegistry.KboMutations.MutationLambda.Ftps;
-using AssociationRegistry.KboMutations.Tests.Fakers;
+using AssociationRegistry.KboMutations.MutationLambdaContainer;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
 using Moq;
 

@@ -62,8 +62,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "start", "start", "{3146BFF2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationFileLambda", "src\AssociationRegistry.KboMutations.MutationFileLambda\AssociationRegistry.KboMutations.MutationFileLambda.csproj", "{068168C4-A1DB-4952-8649-44420B91AA03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationLambda", "src\AssociationRegistry.KboMutations.MutationLambda\AssociationRegistry.KboMutations.MutationLambda.csproj", "{06DC051A-102E-4291-9DA7-E51E7D808357}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.SyncLambda", "src\AssociationRegistry.KboMutations.SyncLambda\AssociationRegistry.KboMutations.SyncLambda.csproj", "{CD602682-F824-460E-BAB1-75BEE0700977}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMutations.MutationFileLambda.Tests", "test\AssociationRegistry.KboMutations.MutationFileLambda.Tests\AssociationRegistry.KboMutations.MutationFileLambda.Tests.csproj", "{2D584510-0DCD-477A-A72E-098A7749197D}"
@@ -83,8 +81,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMuta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.Tests", "test\AssociationRegistry.KboMutations.Tests\AssociationRegistry.KboMutations.Tests.csproj", "{6A51E44A-626E-4CBA-8369-DC2C47B9C649}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry", "..\association-registry\src\AssociationRegistry\AssociationRegistry.csproj", "{D95EAB66-3341-4084-982D-CF999C5DC99B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.Integration.Tests", "test\AssociationRegistry.KboMutations.Integration.Tests\AssociationRegistry.KboMutations.Integration.Tests.csproj", "{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer", "src\AssociationRegistry.KboMutations.MutationLambdaContainer\AssociationRegistry.KboMutations.MutationLambdaContainer.csproj", "{13DA2E01-E14C-44A3-A054-6EF78350137F}"
@@ -101,10 +97,6 @@ Global
 		{068168C4-A1DB-4952-8649-44420B91AA03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{068168C4-A1DB-4952-8649-44420B91AA03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{068168C4-A1DB-4952-8649-44420B91AA03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06DC051A-102E-4291-9DA7-E51E7D808357}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06DC051A-102E-4291-9DA7-E51E7D808357}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06DC051A-102E-4291-9DA7-E51E7D808357}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06DC051A-102E-4291-9DA7-E51E7D808357}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD602682-F824-460E-BAB1-75BEE0700977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD602682-F824-460E-BAB1-75BEE0700977}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD602682-F824-460E-BAB1-75BEE0700977}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -129,10 +121,6 @@ Global
 		{6A51E44A-626E-4CBA-8369-DC2C47B9C649}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A51E44A-626E-4CBA-8369-DC2C47B9C649}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A51E44A-626E-4CBA-8369-DC2C47B9C649}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D95EAB66-3341-4084-982D-CF999C5DC99B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -157,7 +145,6 @@ Global
 		{86D24D16-1C11-47CF-9A6C-DA2E85DEE23F} = {D2DD7A61-4C36-4004-AF1A-697939D29480}
 		{3146BFF2-8A1E-49A0-BEE3-34297050485E} = {D2DD7A61-4C36-4004-AF1A-697939D29480}
 		{068168C4-A1DB-4952-8649-44420B91AA03} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
-		{06DC051A-102E-4291-9DA7-E51E7D808357} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{CD602682-F824-460E-BAB1-75BEE0700977} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{2D584510-0DCD-477A-A72E-098A7749197D} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 		{DD4742A9-3574-4069-9B18-5B52F8057048} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
@@ -165,7 +152,6 @@ Global
 		{4FADDBD7-41D6-4C73-9EEB-32036912878F} = {670B244A-7CB7-4C34-81E6-FBF6516EE355}
 		{147E5EE9-7A24-46FB-B2A3-76FC52460A58} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{6A51E44A-626E-4CBA-8369-DC2C47B9C649} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
-		{D95EAB66-3341-4084-982D-CF999C5DC99B} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 		{13DA2E01-E14C-44A3-A054-6EF78350137F} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{B5B2747A-1205-454A-B8AD-F09843ECA906} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}

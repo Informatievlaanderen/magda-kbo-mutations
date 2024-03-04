@@ -1,20 +1,45 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SQSEvents;
 using Amazon.S3;
+using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssociationRegistry.Events;
+using AssociationRegistry.EventStore;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
+using AssociationRegistry.KboMutations.SyncLambda.Aws;
+using AssociationRegistry.KboMutations.SyncLambda.Configuration;
+using AssociationRegistry.Magda;
+using AssociationRegistry.Magda.Configuration;
+using AssociationRegistry.Magda.Models;
+using AssociationRegistry.Vereniging;
+using Marten;
+using Marten.Events;
+using Marten.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Npgsql;
+using Weasel.Core;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace AssociationRegistry.KboMutations.SyncLambda;
 
 public class Function
 {
-    private static MessageProcessor? _processor;
-
     private static async Task Main()
+    {
+        var handler = FunctionHandler;
+        await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
+            .Build()
+            .RunAsync();
+    }
+
+    private static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
         var s3Client = new AmazonS3Client();
         var sqsClient = new AmazonSQSClient();
@@ -24,48 +49,119 @@ public class Function
             .AddJsonFile("appsettings.json", true, true)
             .AddEnvironmentVariables();
 
-        var awsConfigurationSection = configurationBuilder
-            .Build()
+        var configuration = configurationBuilder.Build();
+        var awsConfigurationSection = configuration
             .GetSection("AWS");
 
-        _processor = new MessageProcessor(s3Client, sqsClient, new AmazonKboSyncConfiguration
+        var paramNamesConfiguration = configuration
+            .GetSection(ParamNamesConfiguration.Section)
+            .Get<ParamNamesConfiguration>();
+
+        var processor = new MessageProcessor(s3Client, sqsClient, new AmazonKboSyncConfiguration
         {
-            MutationFileBucketUrl = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
             MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
             SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
         });
+
+        var ssmClientWrapper = new SsmClientWrapper(new AmazonSimpleSystemsManagementClient());
+        var magdaOptions = await GetMagdaOptions(configuration, ssmClientWrapper, paramNamesConfiguration);
+
+        var store = await SetUpDocumentStore(configuration, context.Logger, ssmClientWrapper, paramNamesConfiguration);
         
-        var handler = FunctionHandler;
-        await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
-            .Build()
-            .RunAsync();
+        var repository = new VerenigingsRepository(new EventStore.EventStore(store));
+        
+        var loggerFactory = new LoggerFactory();
+
+        var geefOndernemingService = new MagdaGeefVerenigingService(
+            new MagdaCallReferenceRepository(store.LightweightSession()),
+            new MagdaFacade(magdaOptions, loggerFactory.CreateLogger<MagdaFacade>()),
+            new TemporaryMagdaVertegenwoordigersSection(),
+            loggerFactory.CreateLogger<MagdaGeefVerenigingService>());
+
+        context.Logger.LogInformation(JsonSerializer.Serialize(magdaOptions));
+
+        context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
+        await processor!.ProcessMessage(@event, context.Logger, geefOndernemingService, repository,
+            CancellationToken.None);
+        context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
     }
 
-    /// <summary>
-    ///     This method is called for every Lambda invocation. This method takes in an SQS event object and can be used
-    ///     to respond to SQS messages.
-    /// </summary>
-    /// <param name="event"></param>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    private static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
+    
+    private static async Task<MagdaOptionsSection> GetMagdaOptions(IConfiguration config,
+        SsmClientWrapper ssmClient, 
+        ParamNamesConfiguration? paramNamesConfiguration)
     {
-        context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
-        await _processor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
-        context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
+        var magdaOptions = config.GetSection(MagdaOptionsSection.SectionName)
+            .Get<MagdaOptionsSection>();
+
+        if (magdaOptions is null)
+            throw new ArgumentException("Could not load MagdaOptions");
+
+        magdaOptions.ClientCertificate = await ssmClient.GetParameterAsync(paramNamesConfiguration.MagdaCertificate);
+        magdaOptions.ClientCertificatePassword =
+            await ssmClient.GetParameterAsync(paramNamesConfiguration.MagdaCertificatePassword);
+        return magdaOptions;
+    }
+
+    private static async Task<DocumentStore> SetUpDocumentStore(IConfiguration config,
+        ILambdaLogger contextLogger,
+        SsmClientWrapper ssmClientWrapper,
+        ParamNamesConfiguration paramNames)
+    {
+        var postgresSection =
+            config.GetSection(PostgreSqlOptionsSection.SectionName)
+                .Get<PostgreSqlOptionsSection>();
+
+        if (!postgresSection.IsComplete)
+            throw new ApplicationException("PostgresSqlOptions is missing some values");
+
+        var opts = new StoreOptions();
+        var connectionStringBuilder = new NpgsqlConnectionStringBuilder();
+        connectionStringBuilder.Host = postgresSection.Host;
+        connectionStringBuilder.Database = postgresSection.Database;
+        connectionStringBuilder.Username = postgresSection.Username;
+        connectionStringBuilder.Port = 5432;
+        connectionStringBuilder.Password = await ssmClientWrapper.GetParameterAsync(paramNames.PostgresPassword);
+        opts.Schema.For<MagdaCallReference>().Identity(x => x.Reference);
+
+        var connectionString = connectionStringBuilder.ToString();
+            
+        contextLogger.LogInformation(connectionString);
+            
+        opts.Connection(connectionString);
+        opts.Events.StreamIdentity = StreamIdentity.AsString;
+        opts.Serializer(CreateCustomMartenSerializer());
+        opts.Events.MetadataConfig.EnableAll();
+        opts.AutoCreateSchemaObjects = AutoCreate.None;
+        var store = new DocumentStore(opts);
+        return store;
+    }
+    
+    public static JsonNetSerializer CreateCustomMartenSerializer()
+    {
+        var jsonNetSerializer = new JsonNetSerializer();
+
+        jsonNetSerializer.Customize(
+            s =>
+            {
+                s.DateParseHandling = DateParseHandling.None;
+                s.Converters.Add(new NullableDateOnlyJsonConvertor(WellknownFormats.DateOnly));
+                s.Converters.Add(new DateOnlyJsonConvertor(WellknownFormats.DateOnly));
+            });
+
+        return jsonNetSerializer;
     }
 }
 
-/// <summary>
-/// This class is used to register the input event and return type for the FunctionHandler method with the System.Text.Json source generator.
-/// There must be a JsonSerializable attribute for each type used as the input and return type or a runtime error will occur 
-/// from the JSON serializer unable to find the serialization information for unknown types.
-/// </summary>
-[JsonSerializable(typeof(string))]
+public static class DateOnlyHelpers
+{
+    public static DateOnly TryParse(string dateOnly, string format)
+        => DateOnly.TryParseExact(dateOnly, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result)
+            ? result
+            : throw new InvalidDateFormat();
+}
+
 [JsonSerializable(typeof(SQSEvent))]
 public partial class LambdaFunctionJsonSerializerContext : JsonSerializerContext
 {
-    // By using this partial class derived from JsonSerializerContext, we can generate reflection free JSON Serializer code at compile time
-    // which can deserialize our class and properties. However, we must attribute this class to tell it what types to generate serialization code for.
-    // See https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-source-generation
 }

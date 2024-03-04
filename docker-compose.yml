@@ -9,7 +9,7 @@ services:
       - 127.0.0.1:4566:4566            # LocalStack Gateway
       - 127.0.0.1:4510-4559:4510-4559  # external services port range
     environment:
-      SERVICES: s3,sqs,lambda,dynamodb,iam,logs
+      SERVICES: s3,sqs,lambda,dynamodb,iam,logs,ssm
       # LOCALSTACK_HOST: localstack
       DOCKER_HOST: unix:///var/run/docker.sock
       DEFAULT_REGION: us-east-1
@@ -25,6 +25,8 @@ services:
       - .localstack/s3data:/tmp/localstack-s3-storage
       - localstack-data:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
+    networks: 
+      - localstack-net
 
   wiremock:
     image: rodolpheche/wiremock:2.29.1
@@ -33,6 +35,8 @@ services:
       - ./wiremock/mappings:/home/wiremock/mappings
     ports:
       - 8080:8080
+    networks:
+      - localstack-net
 
   ftp:
     image: rhrn/vsftpd
@@ -46,7 +50,47 @@ services:
       - ./sftp/cert:/etc/vsftpd/
       # - ./sftp/logs/vsftpd.log:/var/log/vsftpd.log
       - ./sftp/files:/home/files
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+    ports:
+      - "9200:9200"
+    environment:
+      ELASTIC_PASSWORD: local_development
+      discovery.type: single-node
+      xpack.security.transport.ssl.enabled: false
+      cluster.routing.allocation.disk.watermark.low: 97%
+      cluster.routing.allocation.disk.watermark.high: 98%
+      cluster.routing.allocation.disk.watermark.flood_stage: 99%
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
+  db:
+    container_name: kbomutations_db
+    image: postgres:15.0
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: verenigingsregister
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - localstack-net
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    command: [ "--config=/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
 
 volumes:
   localstack-data:
   seq-data:
+  pg-data:
+  es-data:
+networks:
+  localstack-net:

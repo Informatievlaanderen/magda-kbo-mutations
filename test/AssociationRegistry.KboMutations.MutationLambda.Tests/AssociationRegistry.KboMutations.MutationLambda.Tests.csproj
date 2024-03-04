@@ -14,7 +14,7 @@
         <PackageReference Include="xunit.runner.visualstudio"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\AssociationRegistry.KboMutations.MutationLambda\AssociationRegistry.KboMutations.MutationLambda.csproj"/>
+        <ProjectReference Include="..\..\src\AssociationRegistry.KboMutations.MutationLambdaContainer\AssociationRegistry.KboMutations.MutationLambdaContainer.csproj" />
         <ProjectReference Include="..\AssociationRegistry.KboMutations.Tests\AssociationRegistry.KboMutations.Tests.csproj"/>
     </ItemGroup>
 </Project>
