@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
@@ -70,8 +69,11 @@ public class Function
         
         var repository = new VerenigingsRepository(new EventStore.EventStore(store));
         
-        var loggerFactory = new LoggerFactory();
-
+        var loggerFactory = LoggerFactory.Create(builder => 
+        {
+            builder.AddProvider(new LambdaLoggerProvider(context.Logger));
+        });
+        
         var geefOndernemingService = new MagdaGeefVerenigingService(
             new MagdaCallReferenceRepository(store.LightweightSession()),
             new MagdaFacade(magdaOptions, loggerFactory.CreateLogger<MagdaFacade>()),
@@ -151,14 +153,6 @@ public class Function
 
         return jsonNetSerializer;
     }
-}
-
-public static class DateOnlyHelpers
-{
-    public static DateOnly TryParse(string dateOnly, string format)
-        => DateOnly.TryParseExact(dateOnly, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var result)
-            ? result
-            : throw new InvalidDateFormat();
 }
 
 [JsonSerializable(typeof(SQSEvent))]

@@ -23,6 +23,16 @@ namespace AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMu
 
 public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixture
 {
+    public static KboNummer KboNummerBekendeVereniging = KboNummer.Create("0442528054");
+    public static KboNummer KboNummerOnbekendeVereniging = KboNummer.Create("0000000097");
+    
+    public static Dictionary<KboNummer, VCode> KboNummersToSeed =
+    new()
+    {
+        { KboNummerBekendeVereniging, VCode.Create("V0001001")},
+        { KboNummerOnbekendeVereniging, VCode.Create("V0001002")},
+    };
+
     public With_TeVerwerkenMutatieBestand_FromLocalstack() : base(
         WellKnownBucketNames.MutationFileBucketName,
         WellKnownQueueNames.MutationFileQueueUrl,
@@ -64,8 +74,8 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
             CurlLocation = "curl",
             AdditionalParams = "-k"
         };
-        
-        await SeedVerenigingen(new[]{ "0442528054", "0000000097"});
+
+        await SeedVerenigingen(KboNummersToSeed);
 
         await ClearQueue(KboSyncConfiguration.MutationFileQueueUrl);
         await ClearQueue(KboSyncConfiguration.SyncQueueUrl);
@@ -80,32 +90,19 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
         // ReceivedMessages = await FetchMessages(KboSyncConfiguration.SyncQueueUrl);
     }
 
-    private static async Task SeedVerenigingen(IEnumerable<string> kboNummersToSeed)
+    private static async Task SeedVerenigingen(Dictionary<KboNummer, VCode> kboNummersToSeed)
     {
-        var documentStore = DocumentStore.For(opts =>
-        {
-            var connectionStringBuilder = new NpgsqlConnectionStringBuilder();
-            connectionStringBuilder.Host = "localhost";
-            connectionStringBuilder.Database = "verenigingsregister";
-            connectionStringBuilder.Username = "root";
-            connectionStringBuilder.Password = "root";
-
-            opts.Connection(connectionStringBuilder.ToString());
-            opts.Events.StreamIdentity = StreamIdentity.AsString;
-            // opts.Serializer(CreateCustomMartenSerializer());
-            opts.Events.MetadataConfig.EnableAll();
-            opts.AutoCreateSchemaObjects = AutoCreate.All;
-        });
+        var documentStore = CreateDocumentStore();
         
         await documentStore.Storage.ApplyAllConfiguredChangesToDatabaseAsync();
         
         await documentStore.Storage.Database.DeleteAllEventDataAsync();
 
         var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore));
-        foreach (var (kboNummer, i) in kboNummersToSeed.Select((x,y) => (x,y)))
+        foreach (var (kboNummer, vCode) in kboNummersToSeed)
         {
             var verenigingMetRechtspersoonlijkheid = VerenigingMetRechtspersoonlijkheid.Registreer(
-                VCode.Create(1001 + i),
+                vCode,
                 new VerenigingVolgensKbo
                 {
                     KboNummer = KboNummer.Create(kboNummer),
@@ -121,6 +118,25 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
 
             result.Sequence.Should().BeGreaterThan(0);
         }
+    }
+
+    public static DocumentStore CreateDocumentStore()
+    {
+        var documentStore = DocumentStore.For(opts =>
+        {
+            var connectionStringBuilder = new NpgsqlConnectionStringBuilder();
+            connectionStringBuilder.Host = "localhost";
+            connectionStringBuilder.Database = "verenigingsregister";
+            connectionStringBuilder.Username = "root";
+            connectionStringBuilder.Password = "root";
+
+            opts.Connection(connectionStringBuilder.ToString());
+            opts.Events.StreamIdentity = StreamIdentity.AsString;
+            // opts.Serializer(CreateCustomMartenSerializer());
+            opts.Events.MetadataConfig.EnableAll();
+            opts.AutoCreateSchemaObjects = AutoCreate.All;
+        });
+        return documentStore;
     }
 
     public async Task<List<Message>> FetchMessages(string syncQueueUrl)
