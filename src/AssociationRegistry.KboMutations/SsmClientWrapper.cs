@@ -2,7 +2,7 @@ using System.Net;
 using Amazon.SimpleSystemsManagement;
 using Amazon.SimpleSystemsManagement.Model;
 
-namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
+namespace AssociationRegistry.KboMutations;
 
 public class SsmClientWrapper
 {
