@@ -15,20 +15,10 @@
         <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" Version="68.2.0.9" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
-        <PackageReference Include="Amazon.Lambda.Core"/>
-        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson"/>
         <PackageReference Include="Amazon.Lambda.APIGatewayEvents" />
         <PackageReference Include="Amazon.Lambda.SQSEvents" />
         <PackageReference Include="AWSSDK.Core" />
         <PackageReference Include="AWSSDK.DynamoDBv2" />
-        <PackageReference Include="AWSSDK.SimpleSystemsManagement" />
-        <PackageReference Include="AWSSDK.SQS" />
-        <PackageReference Include="CsvHelper"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\AssociationRegistry.KboMutations\AssociationRegistry.KboMutations.csproj" />

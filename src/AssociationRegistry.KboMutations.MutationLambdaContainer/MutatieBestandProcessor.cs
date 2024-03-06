@@ -42,50 +42,60 @@ public class MutatieBestandProcessor
 
     public async Task ProcessAsync(CancellationToken cancellationToken = default)
     {
-        var magdaMutatieBestanden = GetMagdaMutatieBestanden()
-            .ToList();
-        
+        var magdaMutatieBestanden = GetMagdaMutatieBestanden().ToList();
+        await _notifier.NotifyDownloadFileSuccess(magdaMutatieBestanden.Count);
+
         foreach (var magdaMutatieBestand in magdaMutatieBestanden)
         {
-            using var stream = new MemoryStream();
-            
-            // Download file from MAGDA
-            var fullNameUri = _baseUriBuilder.WithPath(magdaMutatieBestand.FtpPath).ToString();
-            var fileName = Path.GetFileName(fullNameUri);
-            var localDestinationFilePath = Path.Join(_kboMutationsConfiguration.DownloadPath, fileName);
-            
-            if(!_ftpsClient.Download(stream, fullNameUri, localDestinationFilePath))
-                   throw new ApplicationException($"Bestand {magdaMutatieBestand.Name} kon niet opgehaald worden");
-            stream.Seek(0, SeekOrigin.Begin);
-            
-            // Save file on S3
-            await _s3Client.PutObjectAsync(new PutObjectRequest
+            try
             {
-                BucketName = _kboSyncConfiguration.MutationFileBucketName,
-                Key = magdaMutatieBestand.Name,
-                InputStream = stream
-            }, cancellationToken);
-            
-            // Notify about file on SQS
-            await _sqsClient.SendMessageAsync(new SendMessageRequest(
-                _kboSyncConfiguration.MutationFileQueueUrl, 
-                JsonSerializer.Serialize(new TeVerwerkenMutatieBestandMessage(magdaMutatieBestand.Name))
-            )
+                using var stream = new MemoryStream();
+
+                // Download file from MAGDA
+                var fullNameUri = _baseUriBuilder.WithPath(magdaMutatieBestand.FtpPath).ToString();
+                var fileName = Path.GetFileName(fullNameUri);
+                var localDestinationFilePath = Path.Join(_kboMutationsConfiguration.DownloadPath, fileName);
+
+                if (!_ftpsClient.Download(stream, fullNameUri, localDestinationFilePath))
+                {
+                    throw new ApplicationException($"Bestand {magdaMutatieBestand.Name} kon niet opgehaald worden");
+                }
+
+                stream.Seek(0, SeekOrigin.Begin);
+
+                // Save file on S3
+                await _s3Client.PutObjectAsync(new PutObjectRequest
+                {
+                    BucketName = _kboSyncConfiguration.MutationFileBucketName,
+                    Key = magdaMutatieBestand.Name,
+                    InputStream = stream
+                }, cancellationToken);
+                _logger.LogInformation($"S3:PutObject for filename '{magdaMutatieBestand.Name}'");
+
+                // Notify about file on SQS
+                await _sqsClient.SendMessageAsync(new SendMessageRequest(
+                    _kboSyncConfiguration.MutationFileQueueUrl,
+                    JsonSerializer.Serialize(new TeVerwerkenMutatieBestandMessage(magdaMutatieBestand.Name))
+                )
+                {
+                    MessageGroupId = Guid.NewGuid().ToString()
+                }, cancellationToken);
+
+                // Archive file from MAGDA
+                ArchiveerMagdaMutatieBestand(magdaMutatieBestand);
+            }
+            catch (Exception ex)
             {
-                MessageGroupId = Guid.NewGuid().ToString()
-            }, cancellationToken);
-            
-            // Archive file from MAGDA
-            ArchiveerMagdaMutatieBestand(magdaMutatieBestand);
+                await _notifier.NotifyFailure(ex.Message);
+            }
         }
-        await _notifier.NotifySuccess(magdaMutatieBestanden.Count);
     }
 
     private IEnumerable<MagdaMutatieBestand> GetMagdaMutatieBestanden()
     {
-        _logger.LogInformation($"Fetching mutation files from folder {_kboMutationsConfiguration.SourcePath}");
+        _logger.LogInformation($"Fetching mutation files from folder {_kboMutationsConfiguration.SourcePath} started.");
 
-        var sourceDirectoryUri = _baseUriBuilder.AppendDir(_kboMutationsConfiguration.SourcePath); 
+        var sourceDirectoryUri = _baseUriBuilder.AppendDir(_kboMutationsConfiguration.SourcePath);
         var curlListResult = _ftpsClient.GetListing(sourceDirectoryUri.ToString());
         var mutationFiles =
             FtpsListParser.Parse(sourceDirectoryUri, curlListResult)
@@ -94,12 +104,13 @@ public class MutatieBestandProcessor
                 .ToList();
 
         _logger.LogInformation($"Found {mutationFiles.Count} mutation files to process");
+        _logger.LogInformation($"Fetching mutation files from folder {_kboMutationsConfiguration.SourcePath} finished.");
         return mutationFiles;
     }
-    
+
     private void ArchiveerMagdaMutatieBestand(MagdaMutatieBestand magdaMutatieBestand)
     {
-        _logger.LogInformation($"Archiving {magdaMutatieBestand.FtpPath} to {_kboMutationsConfiguration.CachePath}");
+        _logger.LogInformation($"Archiving {magdaMutatieBestand.FtpPath} to {_kboMutationsConfiguration.CachePath} started.");
 
         var sourceFullNameUri = _baseUriBuilder.WithPath(magdaMutatieBestand.FtpPath);
         var destinationFullNameUri = _baseUriBuilder
@@ -109,5 +120,7 @@ public class MutatieBestandProcessor
         _ftpsClient.MoveFile(_baseUriBuilder.ToString(),
             sourceFullNameUri.Path,
             destinationFullNameUri.Path);
+
+        _logger.LogInformation($"Archiving {magdaMutatieBestand.FtpPath} to {_kboMutationsConfiguration.CachePath} finished.");
     }
 }
