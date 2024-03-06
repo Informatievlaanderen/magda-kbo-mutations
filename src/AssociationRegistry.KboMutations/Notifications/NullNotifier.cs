@@ -2,13 +2,13 @@ namespace AssociationRegistry.KboMutations.Notifications;
 
 public class NullNotifier : INotifier
 {
-    public Task NotifySuccess(int numberOfFiles)
-    {
-        return Task.CompletedTask;
-    }
+    public Task NotifyLambdaTriggered() => Task.CompletedTask;
 
-    public Task NotifyFailure(string reason)
-    {
-        return Task.CompletedTask;
-    }
+    public Task NotifyLambdaFinished() => Task.CompletedTask;
+
+    public Task NotifyLambdaFailed(string exceptionMessage) => Task.CompletedTask;
+
+    public Task NotifyDownloadFileSuccess(int numberOfFiles) => Task.CompletedTask;
+
+    public Task NotifyFailure(string reason) => Task.CompletedTask;
 }

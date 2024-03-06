@@ -45,20 +45,19 @@ public static class Function
         
         try
         {
+            await NotifyLambdaTriggered(notifier, context.Logger);
             var mutatieBestandProcessor = await SetUpFunction(
                 context,
                 GetKboMutationsConfiguration(configurationRoot),
                 configurationRoot.GetSection("AWS"),
                 notifier);
             
-            context.Logger.LogInformation($"MUTATION FILE PROCESSOR STARTED");
             await mutatieBestandProcessor.ProcessAsync();
-            context.Logger.LogInformation($"MUTATION FILE PROCESSOR COMPLETED");
+            await NotifyLambdaFinished(notifier, context.Logger);
         }
         catch (Exception ex)
         {
-            await notifier.NotifyFailure(ex.Message);
-            
+            await NotifyLambdaFailed(notifier, context.Logger, ex);
             throw;
         }
     }
@@ -111,6 +110,25 @@ public static class Function
             throw new ApplicationException("Could not load ParamNamesConfiguration");
         return paramNamesConfiguration;
     }
+    
+    private static async Task NotifyLambdaTriggered(INotifier notifier, ILambdaLogger logger, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation($"KBO sync mutation lambda has started.");
+        await notifier.NotifyLambdaTriggered();
+    }
+
+    private static async Task NotifyLambdaFinished(INotifier notifier, ILambdaLogger logger, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation($"KBO sync mutation lambda has finished.");
+        await notifier.NotifyLambdaFinished();
+    }
+    
+    private static async Task NotifyLambdaFailed(INotifier notifier, ILambdaLogger logger, Exception ex, CancellationToken cancellationToken = default)
+    {
+        logger.LogError($"KBO sync mutation lambda has encountered an exception! '{ex.Message}'");
+        await notifier.NotifyFailure(ex.Message);
+    }
+
 }
 
 [JsonSerializable(typeof(string))]
