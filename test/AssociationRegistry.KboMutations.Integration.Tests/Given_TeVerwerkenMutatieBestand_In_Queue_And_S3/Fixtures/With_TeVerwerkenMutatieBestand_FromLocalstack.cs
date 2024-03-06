@@ -9,7 +9,7 @@ using AssociationRegistry.KboMutations.MutationLambdaContainer;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
-using AssociationRegistry.KboMutations.MutationLambdaContainer.Notifications;
+using AssociationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
 using AssociationRegistry.Vereniging;
 using AutoBogus;

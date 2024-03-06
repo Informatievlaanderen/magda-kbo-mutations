@@ -1,4 +1,4 @@
-namespace AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
+namespace AssociationRegistry.KboMutations.Configuration;
 
 public class ParamNamesConfiguration
 {

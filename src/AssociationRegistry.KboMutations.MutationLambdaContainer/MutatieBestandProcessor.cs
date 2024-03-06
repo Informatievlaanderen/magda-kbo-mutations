@@ -10,7 +10,7 @@ using AssocationRegistry.KboMutations.Models;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
-using AssociationRegistry.KboMutations.MutationLambdaContainer.Notifications;
+using AssociationRegistry.KboMutations.Notifications;
 
 namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
 

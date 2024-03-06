@@ -6,9 +6,10 @@ using Amazon.S3;
 using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssociationRegistry.KboMutations.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
-using AssociationRegistry.KboMutations.MutationLambdaContainer.Notifications;
+using AssociationRegistry.KboMutations.Notifications;
 using Microsoft.Extensions.Configuration;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]

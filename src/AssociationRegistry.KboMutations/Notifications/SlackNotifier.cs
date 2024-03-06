@@ -1,7 +1,8 @@
 using Amazon.Lambda.Core;
+using AssocationRegistry.KboMutations.Models;
 using Slack.Webhooks;
 
-namespace AssociationRegistry.KboMutations.SyncLambda.Notifications;
+namespace AssociationRegistry.KboMutations.Notifications;
 
 public class SlackNotifier : INotifier
 {

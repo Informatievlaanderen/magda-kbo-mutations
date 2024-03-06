@@ -1,8 +1,7 @@
 using Amazon.Lambda.Core;
-using AssociationRegistry.KboMutations.SyncLambda.Aws;
-using AssociationRegistry.KboMutations.SyncLambda.Configuration;
+using AssociationRegistry.KboMutations.Configuration;
 
-namespace AssociationRegistry.KboMutations.SyncLambda.Notifications;
+namespace AssociationRegistry.KboMutations.Notifications;
 
 public class NotifierFactory
 {

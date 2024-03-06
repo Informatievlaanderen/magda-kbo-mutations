@@ -1,4 +1,4 @@
-namespace AssociationRegistry.KboMutations.MutationLambdaContainer.Notifications;
+namespace AssociationRegistry.KboMutations.Notifications;
 
 public class NullNotifier : INotifier
 {
