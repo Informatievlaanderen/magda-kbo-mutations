@@ -9,7 +9,6 @@ using Amazon.SQS;
 using AssocationRegistry.KboMutations;
 using AssociationRegistry.Events;
 using AssociationRegistry.EventStore;
-using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.SyncLambda.Aws;
 using AssociationRegistry.KboMutations.SyncLambda.Configuration;
 using AssociationRegistry.Magda;

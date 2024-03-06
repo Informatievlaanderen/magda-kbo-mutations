@@ -61,7 +61,7 @@ public class Function
 
         var amazonKboSyncConfiguration = new AmazonKboSyncConfiguration
         {
-            MutationFileBucketUrl = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
+            MutationFileBucketName = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
             MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
             SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
         };
@@ -72,8 +72,8 @@ public class Function
         if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.MutationFileQueueUrl))
             throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.MutationFileQueueUrl)} cannot be null or empty");
         
-        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.MutationFileBucketUrl))
-            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.MutationFileBucketUrl)} cannot be null or empty");
+        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.MutationFileBucketName))
+            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.MutationFileBucketName)} cannot be null or empty");
         
         return amazonKboSyncConfiguration;
     }

@@ -28,7 +28,7 @@ public abstract class WithLocalstackFixture : IAsyncLifetime
         
         KboSyncConfiguration = new AmazonKboSyncConfiguration
         {
-            MutationFileBucketUrl = mutationFileBucket,
+            MutationFileBucketName = mutationFileBucket,
             MutationFileQueueUrl = mutationFileQueue,
             SyncQueueUrl = syncQueue,
         };
@@ -40,7 +40,7 @@ public abstract class WithLocalstackFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await AmazonS3Client.PutBucketAsync(KboSyncConfiguration.MutationFileBucketUrl);
+        await AmazonS3Client.PutBucketAsync(KboSyncConfiguration.MutationFileBucketName);
         var mutationFileQueueResponse = await AmazonSqsClient.CreateQueueAsync(KboSyncConfiguration.MutationFileQueueUrl);
         var syncQueueResponse = await AmazonSqsClient.CreateQueueAsync(KboSyncConfiguration.SyncQueueUrl);
         

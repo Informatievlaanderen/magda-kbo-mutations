@@ -30,6 +30,7 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
         <PackageReference Include="NodaTime" />
+        <PackageReference Include="Slack.Webhooks" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\AssociationRegistry.KboMutations\AssociationRegistry.KboMutations.csproj" />

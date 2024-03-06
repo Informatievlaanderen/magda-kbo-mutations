@@ -1,49 +1,34 @@
-using Amazon.SimpleSystemsManagement;
+using System.Text;
+using Amazon.Lambda.Core;
+using Amazon.S3;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 
 namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
 
 public class CertificatesProvider
 {
-    private readonly ParamNamesConfiguration _paramNamesConfiguration;
     private readonly KboMutationsConfiguration _kboMutationsConfiguration;
-    private readonly SsmClientWrapper _ssmClient;
 
-    public CertificatesProvider(AmazonSimpleSystemsManagementClient client,
-    ParamNamesConfiguration paramNamesConfiguration,
-        KboMutationsConfiguration kboMutationsConfiguration)
+    public CertificatesProvider(KboMutationsConfiguration kboMutationsConfiguration)
     {
-        if (client == null)
-            throw new ArgumentNullException(nameof(client));
-
         if (kboMutationsConfiguration == null)
             throw new ArgumentNullException(nameof(kboMutationsConfiguration));
-        
-        if (paramNamesConfiguration == null)
-            throw new ArgumentNullException(nameof(paramNamesConfiguration));
-        
-        if (string.IsNullOrWhiteSpace(paramNamesConfiguration.Cert))
-            throw new ArgumentException($"{nameof(paramNamesConfiguration.Cert)} cannot be null or empty");
-        
-        if (string.IsNullOrWhiteSpace(paramNamesConfiguration.CaCert))
-            throw new ArgumentException($"{nameof(paramNamesConfiguration.CaCert)} cannot be null or empty");
-        
-        if (string.IsNullOrWhiteSpace(paramNamesConfiguration.Key))
-            throw new ArgumentException($"{nameof(paramNamesConfiguration.Key)} cannot be null or empty");
 
-        _paramNamesConfiguration = paramNamesConfiguration;
         _kboMutationsConfiguration = kboMutationsConfiguration;
-        _ssmClient = new SsmClientWrapper(client);
     }
     
-    public async Task WriteCertificatesToFileSystem()
+    public async Task WriteCertificatesToFileSystem(ILambdaLogger logger, IAmazonS3 s3Client)
     {
-        var key = await _ssmClient.GetParameterAsync(_paramNamesConfiguration.Key);
-        var cert = await _ssmClient.GetParameterAsync(_paramNamesConfiguration.Cert);
-        var cacert = await _ssmClient.GetParameterAsync(_paramNamesConfiguration.CaCert);
+        logger.LogInformation($"Downloading certs from {_kboMutationsConfiguration.CertBucketName}");
+        
+        await s3Client.DownloadToFilePathAsync(_kboMutationsConfiguration.CertBucketName, "cacert",
+            _kboMutationsConfiguration.CaCertPath, new Dictionary<string, object>());
+        
+        await s3Client.DownloadToFilePathAsync(_kboMutationsConfiguration.CertBucketName, "cert.crt",
+            _kboMutationsConfiguration.CertPath, new Dictionary<string, object>());
+        
+        await s3Client.DownloadToFilePathAsync(_kboMutationsConfiguration.CertBucketName, "key",
+            _kboMutationsConfiguration.KeyPath, new Dictionary<string, object>());
 
-        await File.WriteAllTextAsync(_kboMutationsConfiguration.KeyPath, key);
-        await File.WriteAllTextAsync(_kboMutationsConfiguration.CertPath, cert);
-        await File.WriteAllTextAsync(_kboMutationsConfiguration.CaCertPath, cacert);
     }
 }

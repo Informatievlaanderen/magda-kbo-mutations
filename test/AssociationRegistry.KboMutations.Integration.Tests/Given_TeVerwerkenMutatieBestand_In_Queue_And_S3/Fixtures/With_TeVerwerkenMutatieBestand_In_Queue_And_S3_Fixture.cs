@@ -88,7 +88,7 @@ public class With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture : WithLocals
         
         await WriteMutationFileToBucket(
             TeVerwerkenMutatieBestandMessage, 
-            KboSyncConfiguration.MutationFileBucketUrl!);
+            KboSyncConfiguration.MutationFileBucketName!);
 
         await SendMutationFileToQueue(
             TeVerwerkenMutatieBestandMessage, 

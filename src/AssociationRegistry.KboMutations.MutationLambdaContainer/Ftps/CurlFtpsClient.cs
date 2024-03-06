@@ -42,6 +42,7 @@ public class CurlFtpsClient : IFtpsClient
                })
         {
             _logger.LogInformation($"Executing: {process.StartInfo.Arguments}");
+            
             process.Start();
             process.WaitForExit();
             var result = process.StandardOutput.ReadToEnd();
@@ -54,9 +55,8 @@ public class CurlFtpsClient : IFtpsClient
         }
     }
     
-    public bool Download(Stream stream, string sourceFilePath)
+    public bool Download(Stream stream, string ftpSourceFilePath, string localDestinationFilePath)
     {
-        var fileName = Guid.NewGuid().ToString();
         using (var process = new Process
                {
                    StartInfo = new ProcessStartInfo
@@ -68,8 +68,8 @@ public class CurlFtpsClient : IFtpsClient
                                    $"--cert {_kboMutationsConfiguration.CertPath} " +
                                    $"--key {_kboMutationsConfiguration.KeyPath} --key-type {_kboMutationsConfiguration.KeyType} " +
                                    (!string.IsNullOrEmpty(_kboMutationsConfiguration.CaCertPath) ? $"--cacert {_kboMutationsConfiguration.CaCertPath} " : "") +
-                                   $"{sourceFilePath} " +
-                                   $"-o {fileName} --fail --silent --show-error",
+                                   $"{ftpSourceFilePath} " +
+                                   $"-o {localDestinationFilePath} --fail --silent --show-error",
                        RedirectStandardOutput = true,
                        RedirectStandardError = true,
                        UseShellExecute = false,
@@ -77,54 +77,56 @@ public class CurlFtpsClient : IFtpsClient
                    }
                })
         {
+            _logger.LogInformation($"Executing: {process.StartInfo.Arguments}");
+
             process.Start();
             process.WaitForExit();
             var error = process.StandardError.ReadToEnd();
 
             if (process.ExitCode != 0)
             {
-                _logger.LogError($"Could not download file {sourceFilePath}:\n{error}");
+                _logger.LogError($"Could not download file {ftpSourceFilePath}:\n{error}");
                 return false;
             }
 
-            var readAllBytes = File.ReadAllBytes(fileName);
+            var readAllBytes = File.ReadAllBytes(localDestinationFilePath);
             stream.Write(readAllBytes);
-            File.Delete(fileName);
-
+            File.Delete(localDestinationFilePath);
+            
             return true;
         }
     }
 
-    public void MoveFile(string baseUri, string sourceFilePath, string destinationFilePath)
+    public void MoveFile(string baseUri, string ftpSourceFilePath, string ftpDestinationFilePath)
     {
-        using (var process = new Process
-               {
-                   StartInfo = new ProcessStartInfo
-                   {
-                       FileName = _kboMutationsConfiguration.CurlLocation,
-                       Arguments = $"--ssl-reqd " +
-                                   $"{_kboMutationsConfiguration.AdditionalParams} " +
-                                   $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
-                                   $"--cert {_kboMutationsConfiguration.CertPath} " +
-                                   $"--key {_kboMutationsConfiguration.KeyPath} --key-type {_kboMutationsConfiguration.KeyType} " +
-                                   (!string.IsNullOrEmpty(_kboMutationsConfiguration.CaCertPath) ? $"--cacert {_kboMutationsConfiguration.CaCertPath} " : "") +
-                                   $"{baseUri} " +
-                                   $"-Q \"-RNFR {sourceFilePath.TrimStart('/')}\" " +
-                                   $"-Q \"-RNTO {destinationFilePath.TrimStart('/')}\" --fail --silent --show-error",
-                       RedirectStandardOutput = true,
-                       RedirectStandardError = true,
-                       UseShellExecute = false,
-                       CreateNoWindow = true
-                   }
-               })
+        using var process = new Process
         {
-            process.Start();
-            process.WaitForExit();
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = _kboMutationsConfiguration.CurlLocation,
+                Arguments = $"--ssl-reqd " +
+                            $"{_kboMutationsConfiguration.AdditionalParams} " +
+                            $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
+                            $"--cert {_kboMutationsConfiguration.CertPath} " +
+                            $"--key {_kboMutationsConfiguration.KeyPath} --key-type {_kboMutationsConfiguration.KeyType} " +
+                            (!string.IsNullOrEmpty(_kboMutationsConfiguration.CaCertPath) ? $"--cacert {_kboMutationsConfiguration.CaCertPath} " : "") +
+                            $"{baseUri} " +
+                            $"-Q \"-RNFR {ftpSourceFilePath.TrimStart('/')}\" " +
+                            $"-Q \"-RNTO {ftpDestinationFilePath.TrimStart('/')}\" --fail --silent --show-error",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }
+        };
+        _logger.LogInformation($"Executing: {process.StartInfo.Arguments}");
 
-            var error = process.StandardError.ReadToEnd();
+        process.Start();
+        process.WaitForExit();
 
-            if (process.ExitCode != 0)
-                _logger.LogError($"Could not move file {sourceFilePath} to {destinationFilePath}:\n{error}");
-        }
+        var error = process.StandardError.ReadToEnd();
+
+        if (process.ExitCode != 0)
+            _logger.LogError($"Could not move file {ftpSourceFilePath} to {ftpDestinationFilePath}:\n{error}");
     }
 }
