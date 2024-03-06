@@ -24,4 +24,6 @@ public class KboMutationsConfiguration
     public bool LockEnabled { get; set; }
     public string CurlLocation { get; set; } = null!;
     public string AdditionalParams { get; set; } = null!;
+    public string DownloadPath { get; set; } = null!;
+    public string CertBucketName { get; set; } = null!;
 }

@@ -9,6 +9,7 @@ using AssociationRegistry.KboMutations.MutationLambdaContainer;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Notifications;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
 using AssociationRegistry.Vereniging;
 using AutoBogus;
@@ -84,10 +85,10 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
 
         var mutatieBestandProcessor = new MutatieBestandProcessor(logger, SecureFtpClient, AmazonS3Client,
             AmazonSqsClient, kboMutationsConfiguration,
-            KboSyncConfiguration);
+            KboSyncConfiguration, 
+            new NullNotifier());
 
         await mutatieBestandProcessor.ProcessAsync();
-        // ReceivedMessages = await FetchMessages(KboSyncConfiguration.SyncQueueUrl);
     }
 
     private static async Task SeedVerenigingen(Dictionary<KboNummer, VCode> kboNummersToSeed)

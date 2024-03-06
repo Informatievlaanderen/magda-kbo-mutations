@@ -34,7 +34,7 @@ public class MessageProcessor
         IVerenigingsRepository repository,
         CancellationToken cancellationToken)
     {
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileBucketUrl)}:{_amazonKboSyncConfiguration.MutationFileBucketUrl}");
+        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileBucketName)}:{_amazonKboSyncConfiguration.MutationFileBucketName}");
         contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileQueueUrl)}:{_amazonKboSyncConfiguration.MutationFileQueueUrl}");
         contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.SyncQueueUrl)}:{_amazonKboSyncConfiguration.SyncQueueUrl}");
 

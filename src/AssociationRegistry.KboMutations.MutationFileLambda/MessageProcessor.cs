@@ -29,7 +29,7 @@ public class MessageProcessor
         ILambdaLogger contextLogger,
         CancellationToken cancellationToken)
     {
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileBucketUrl)}:{_amazonKboSyncConfiguration.MutationFileBucketUrl}");
+        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileBucketName)}:{_amazonKboSyncConfiguration.MutationFileBucketName}");
         contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileQueueUrl)}:{_amazonKboSyncConfiguration.MutationFileQueueUrl}");
         contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.SyncQueueUrl)}:{_amazonKboSyncConfiguration.SyncQueueUrl}");
 
@@ -48,7 +48,7 @@ public class MessageProcessor
         CancellationToken cancellationToken)
     {
         var fetchMutatieBestandResponse = await _s3Client.GetObjectAsync(
-            _amazonKboSyncConfiguration.MutationFileBucketUrl, 
+            _amazonKboSyncConfiguration.MutationFileBucketName, 
             message.Key, 
             cancellationToken);
  
@@ -69,7 +69,7 @@ public class MessageProcessor
             await _sqsClient.SendMessageAsync(_amazonKboSyncConfiguration.SyncQueueUrl, messageBody, cancellationToken);
         }
 
-        await _s3Client.DeleteObjectAsync(_amazonKboSyncConfiguration.MutationFileBucketUrl, message.Key, cancellationToken);
+        await _s3Client.DeleteObjectAsync(_amazonKboSyncConfiguration.MutationFileBucketName, message.Key, cancellationToken);
     }
 
     private static async Task<string> FetchMutationFileContent(

@@ -8,6 +8,7 @@ using Amazon.SQS;
 using AssocationRegistry.KboMutations;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Notifications;
 using Microsoft.Extensions.Configuration;
 
 [assembly: LambdaSerializer(typeof(DefaultLambdaJsonSerializer))]
@@ -19,10 +20,10 @@ public static class Function
     private static async Task Main()
     {
         var handler = FunctionHandler;
-        await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
+        await LambdaBootstrapBuilder.Create(handler,
+                new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
             .Build()
             .RunAsync();
-        
     }
 
     private static async Task FunctionHandler(string input, ILambdaContext context) => await SharedFunctionHandler(context);
@@ -35,37 +36,79 @@ public static class Function
             .AddEnvironmentVariables()
             .Build();
 
-        var awsConfigurationSection = configurationRoot
-            .GetSection("AWS");
+        var ssmClientWrapper = new SsmClientWrapper(new AmazonSimpleSystemsManagementClient());
+        var paramNamesConfiguration = GetParamNamesConfiguration(configurationRoot);
 
-        var kboMutationsConfiguration = configurationRoot
-            .GetSection(KboMutationsConfiguration.Section)
-            .Get<KboMutationsConfiguration>();
-
-        var certProvider = new CertificatesProvider(
-            new AmazonSimpleSystemsManagementClient(),
-            configurationRoot
-                .GetSection(ParamNamesConfiguration.Section)
-                .Get<ParamNamesConfiguration>(),
-            kboMutationsConfiguration);
+        var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger)
+            .TryCreate();
         
-        await certProvider.WriteCertificatesToFileSystem();
+        try
+        {
+            var mutatieBestandProcessor = await SetUpFunction(
+                context,
+                GetKboMutationsConfiguration(configurationRoot),
+                configurationRoot.GetSection("AWS"),
+                notifier);
+            
+            context.Logger.LogInformation($"MUTATION FILE PROCESSOR STARTED");
+            await mutatieBestandProcessor.ProcessAsync();
+            context.Logger.LogInformation($"MUTATION FILE PROCESSOR COMPLETED");
+        }
+        catch (Exception ex)
+        {
+            await notifier.NotifyFailure(ex.Message);
+            
+            throw;
+        }
+    }
+
+    private static async Task<MutatieBestandProcessor> SetUpFunction(
+        ILambdaContext context,
+        KboMutationsConfiguration kboMutationsConfiguration,
+        IConfiguration awsConfigurationSection,
+        INotifier notifier)
+    {
+        var certProvider = new CertificatesProvider(kboMutationsConfiguration);
+
+        var amazonS3Client = new AmazonS3Client();
+        await certProvider.WriteCertificatesToFileSystem(context.Logger, amazonS3Client);
 
         var mutatieBestandProcessor = new MutatieBestandProcessor(
             context.Logger,
             new CurlFtpsClient(context.Logger, kboMutationsConfiguration),
-            new AmazonS3Client(),
+            amazonS3Client,
             new AmazonSQSClient(),
             kboMutationsConfiguration,
-            new AmazonKboSyncConfiguration()
+            new AmazonKboSyncConfiguration
             {
-                MutationFileBucketUrl = awsConfigurationSection["MutationFileBucketName"],
+                MutationFileBucketName = awsConfigurationSection["MutationFileBucketName"],
                 MutationFileQueueUrl = awsConfigurationSection["MutationFileQueueUrl"]!
-            });
+            },
+            notifier);
 
-        context.Logger.LogInformation($"MUTATION FILE PROCESSOR STARTED");
-        await mutatieBestandProcessor.ProcessAsync();
-        context.Logger.LogInformation($"MUTATION FILE PROCESSOR COMPLETED");
+        return mutatieBestandProcessor;
+    }
+
+    private static KboMutationsConfiguration GetKboMutationsConfiguration(IConfigurationRoot configurationRoot)
+    {
+        var kboMutationsConfiguration = configurationRoot
+            .GetSection(KboMutationsConfiguration.Section)
+            .Get<KboMutationsConfiguration>();
+
+        if (kboMutationsConfiguration is null)
+            throw new ApplicationException("Could not load KboMutationsConfiguration");
+        return kboMutationsConfiguration;
+    }
+
+    private static ParamNamesConfiguration GetParamNamesConfiguration(IConfigurationRoot configurationRoot)
+    {
+        var paramNamesConfiguration = configurationRoot
+            .GetSection(ParamNamesConfiguration.Section)
+            .Get<ParamNamesConfiguration>();
+
+        if (paramNamesConfiguration is null)
+            throw new ApplicationException("Could not load ParamNamesConfiguration");
+        return paramNamesConfiguration;
     }
 }
 

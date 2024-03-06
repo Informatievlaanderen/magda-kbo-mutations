@@ -5,6 +5,7 @@ using AssocationRegistry.KboMutations;
 using AssociationRegistry.KboMutations.MutationLambdaContainer;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Notifications;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
 using Moq;
 
@@ -31,7 +32,8 @@ public abstract class WithMutationFileToProcessFixture : WithLocalstackFixture
             ConfigureS3Client(),
             ConfigureSqsClient(),
             KboMutationsConfiguration,
-            KboSyncConfiguration);
+            KboSyncConfiguration, 
+            new NullNotifier());
         return Task.CompletedTask;
     }
 
