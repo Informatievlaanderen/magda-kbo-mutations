@@ -11,20 +11,19 @@ using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
-using AssociationRegistry.KboMutations.Notifications;
 
 namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
 
 public class MutatieBestandProcessor
 {
-    private readonly ILambdaLogger _logger;
+    private readonly FtpUriBuilder _baseUriBuilder;
     private readonly IFtpsClient _ftpsClient;
-    private readonly IAmazonS3 _s3Client;
-    private readonly IAmazonSQS _sqsClient;
     private readonly KboMutationsConfiguration _kboMutationsConfiguration;
     private readonly AmazonKboSyncConfiguration _kboSyncConfiguration;
+    private readonly ILambdaLogger _logger;
     private readonly INotifier _notifier;
-    private readonly FtpUriBuilder _baseUriBuilder;
+    private readonly IAmazonS3 _s3Client;
+    private readonly IAmazonSQS _sqsClient;
 
     public MutatieBestandProcessor(ILambdaLogger logger, IFtpsClient ftpsClient, IAmazonS3 s3Client,
         IAmazonSQS sqsClient, KboMutationsConfiguration kboMutationsConfiguration,
@@ -44,10 +43,9 @@ public class MutatieBestandProcessor
     public async Task ProcessAsync(CancellationToken cancellationToken = default)
     {
         var magdaMutatieBestanden = GetMagdaMutatieBestanden().ToList();
-        await _notifier.NotifyDownloadFileSuccess(magdaMutatieBestanden.Count);
+        await _notifier.Notify(new KboMutationLambdaBestandenOpgehaald(magdaMutatieBestanden.Count));
 
         foreach (var magdaMutatieBestand in magdaMutatieBestanden)
-        {
             try
             {
                 using var stream = new MemoryStream();
@@ -57,10 +55,7 @@ public class MutatieBestandProcessor
                 var fileName = Path.GetFileName(fullNameUri);
                 var localDestinationFilePath = Path.Join(_kboMutationsConfiguration.DownloadPath, fileName);
 
-                if (!_ftpsClient.Download(stream, fullNameUri, localDestinationFilePath))
-                {
-                    throw new ApplicationException($"Bestand {magdaMutatieBestand.Name} kon niet opgehaald worden");
-                }
+                if (!_ftpsClient.Download(stream, fullNameUri, localDestinationFilePath)) throw new ApplicationException($"Bestand {magdaMutatieBestand.Name} kon niet opgehaald worden");
 
                 stream.Seek(0, SeekOrigin.Begin);
 
@@ -87,9 +82,8 @@ public class MutatieBestandProcessor
             }
             catch (Exception ex)
             {
-                await _notifier.NotifyFailure(ex.Message);
+                await _notifier.Notify(new KboMutationLambdaKonBestandNietVerwerken(magdaMutatieBestand.Name, ex));
             }
-        }
     }
 
     private IEnumerable<MagdaMutatieBestand> GetMagdaMutatieBestanden()

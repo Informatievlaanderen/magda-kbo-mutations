@@ -51,15 +51,19 @@ public class MessageProcessor
             {
                 var response = await Handle(contextLogger, message, cancellationToken);
 
-                foreach (var fail in response.Failed)
+                if (response.Failed.Any())
                 {
-                    await _notifier.NotifyFailure($"Kbo Mutatie File Lambda kon message '{fail.Id}' niet verzenden: '{fail.Message}'")
+                    foreach (var fail in response.Failed)
+                    {
+                        contextLogger.LogWarning($"Kbo Mutatie File Lambda kon message '{fail.Id}' niet verzenden: '{fail.Message}'");
+                    }
+
+                    await _notifier.Notify(new KboMutationFileLambdaKonSqsBerichtBatchNietVersturen(response.Failed.Count));
                 }
-                await _notifier.NotifyFailure()
             }
             catch(Exception ex)
             {
-                await _notifier.NotifyFailure(ex.Message);
+                await _notifier.Notify(new KboMutationFileLambdaMessageProcessorGefaald(ex));
                 
                 throw;
             }

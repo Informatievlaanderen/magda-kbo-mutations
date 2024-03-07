@@ -28,7 +28,10 @@ public static class Function
             .RunAsync();
     }
 
-    private static async Task FunctionHandler(string input, ILambdaContext context) => await SharedFunctionHandler(context);
+    private static async Task FunctionHandler(string input, ILambdaContext context)
+    {
+        await SharedFunctionHandler(context);
+    }
 
     public static async Task SharedFunctionHandler(ILambdaContext context)
     {
@@ -43,22 +46,22 @@ public static class Function
 
         var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger)
             .TryCreate();
-        
+
         try
         {
-            await NotifyLambdaTriggered(notifier, context.Logger);
+            await notifier.Notify(new KboMutationLambdaGestart());
             var mutatieBestandProcessor = await SetUpFunction(
                 context,
                 GetKboMutationsConfiguration(configurationRoot),
                 configurationRoot.GetSection("AWS"),
                 notifier);
-            
+
             await mutatieBestandProcessor.ProcessAsync();
-            await NotifyLambdaFinished(notifier, context.Logger);
+            await notifier.Notify(new KboMutationLambdaVoltooid());
         }
         catch (Exception ex)
         {
-            await NotifyLambdaFailed(notifier, context.Logger, ex);
+            await notifier.Notify(new KboMutationLambdaGefaald(ex));
             throw;
         }
     }
@@ -111,25 +114,6 @@ public static class Function
             throw new ApplicationException("Could not load ParamNamesConfiguration");
         return paramNamesConfiguration;
     }
-    
-    private static async Task NotifyLambdaTriggered(INotifier notifier, ILambdaLogger logger, CancellationToken cancellationToken = default)
-    {
-        logger.LogInformation($"KBO sync mutation lambda has started.");
-        await notifier.NotifyLambdaTriggered();
-    }
-
-    private static async Task NotifyLambdaFinished(INotifier notifier, ILambdaLogger logger, CancellationToken cancellationToken = default)
-    {
-        logger.LogInformation($"KBO sync mutation lambda has finished.");
-        await notifier.NotifyLambdaFinished();
-    }
-    
-    private static async Task NotifyLambdaFailed(INotifier notifier, ILambdaLogger logger, Exception ex, CancellationToken cancellationToken = default)
-    {
-        logger.LogError($"KBO sync mutation lambda has encountered an exception! '{ex.Message}'");
-        await notifier.NotifyFailure(ex.Message);
-    }
-
 }
 
 [JsonSerializable(typeof(string))]
