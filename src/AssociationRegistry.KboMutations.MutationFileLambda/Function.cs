@@ -5,8 +5,11 @@ using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SQSEvents;
 using Amazon.S3;
+using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssociationRegistry.KboMutations.Configuration;
+using AssociationRegistry.KboMutations.Notifications;
 using Microsoft.Extensions.Configuration;
 
 namespace AssociationRegistry.KboMutations.MutationFileLambda;
@@ -34,30 +37,40 @@ public class Function
     /// <returns></returns>
     public static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
-        var s3Client = new AmazonS3Client();
-        var sqsClient = new AmazonSQSClient();
-        
-        var configurationBuilder = new ConfigurationBuilder()
+        var configurationRoot = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", true, true)
-            .AddEnvironmentVariables();
-
-        var amazonKboSyncConfiguration = GetAmazonKboSyncConfiguration(configurationBuilder);
-
-        context.Logger.LogInformation(JsonSerializer.Serialize(@event));
-
-        _processor = new MessageProcessor(s3Client, sqsClient, amazonKboSyncConfiguration);
+            .AddEnvironmentVariables()
+            .Build();
         
-        context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
+        var amazonKboSyncConfiguration = GetAmazonKboSyncConfiguration(configurationRoot);
+        var ssmClientWrapper = new SsmClientWrapper(new AmazonSimpleSystemsManagementClient());
+        var paramNamesConfiguration = GetParamNamesConfiguration(configurationRoot);
+        var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger).TryCreate();
+        var s3Client = new AmazonS3Client();
+        var sqsClient = new AmazonSQSClient();
+
+        _processor = new MessageProcessor(s3Client, sqsClient, notifier, amazonKboSyncConfiguration);
+
+        await notifier.Notify(new KboMutationFileLambdaGestart(@event.Records.Count));
         await _processor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
-        context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
+        await notifier.Notify(new KboMutationFileLambdaGestart(@event.Records.Count));
     }
 
-    private static AmazonKboSyncConfiguration GetAmazonKboSyncConfiguration(IConfigurationBuilder configurationBuilder)
+    private static ParamNamesConfiguration GetParamNamesConfiguration(IConfigurationRoot configurationRoot)
     {
-        var awsConfigurationSection = configurationBuilder
-            .Build()
-            .GetSection("AWS");
+        var paramNamesConfiguration = configurationRoot
+            .GetSection(ParamNamesConfiguration.Section)
+            .Get<ParamNamesConfiguration>();
+
+        if (paramNamesConfiguration is null)
+            throw new ApplicationException("Could not load ParamNamesConfiguration");
+        return paramNamesConfiguration;
+    }
+
+    private static AmazonKboSyncConfiguration GetAmazonKboSyncConfiguration(IConfigurationRoot configurationRoot)
+    {
+        var awsConfigurationSection = configurationRoot.GetSection("AWS");
 
         var amazonKboSyncConfiguration = new AmazonKboSyncConfiguration
         {

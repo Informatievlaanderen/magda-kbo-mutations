@@ -2,10 +2,12 @@ namespace AssocationRegistry.KboMutations.Notifications;
 
 public interface INotifier
 {
-    Task NotifyLambdaTriggered();
-    Task NotifyLambdaFinished();
-    Task NotifyLambdaFailed(string exceptionMessage);
-    
-    Task NotifyDownloadFileSuccess(int numberOfFiles);
-    Task NotifyFailure(string reason);
+    Task Notify(IMessage message);
+}
+
+public enum NotifyType
+{
+    None,
+    Success,
+    Failure
 }

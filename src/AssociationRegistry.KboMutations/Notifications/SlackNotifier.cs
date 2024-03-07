@@ -17,34 +17,29 @@ public class SlackNotifier : INotifier
         _slackClient = new SlackClient(webhookUrl);
     }
 
-    public async Task NotifyLambdaTriggered()
-        => await PostSlackAsync(Emoji.Bulb, $"KBO sync mutation lambda has started.");
-
-    public async Task NotifyLambdaFinished()
-        => await PostSlackAsync(Emoji.Bulb, $"KBO sync mutation lambda has started.");
-
-    public async Task NotifyLambdaFailed(string exceptionMessage)
-        => await PostSlackAsync(Emoji.Anger, $"KBO sync mutation lambda has encountered an exception! '{exceptionMessage}'");
-
-    public async Task NotifyDownloadFileSuccess(int numberOfFiles)
-        => await PostSlackAsync(Emoji.Up, $"Kbo Mutaties Lambda heeft {numberOfFiles} bestanden opgehaald van Magda");
-
-    public async Task NotifyFailure(string reason)
-        => await PostSlackAsync(Emoji.X, $"Er zijn fouten opgetreden tijdens bij het ophalen van mutaties in de Kbo Mutaties Lambda: `{reason}`");
-
-    private async Task PostSlackAsync(string emoji, string text)
+    public async Task Notify(IMessage message)
     {
         var postAsync = await _slackClient.PostAsync(new SlackMessage
         {
             Channel = string.Empty,
             Markdown = true,
-            Text = text,
-            IconEmoji = emoji,
+            Text = message.Value,
+            IconEmoji = message.Type switch
+            {
+                NotifyType.None => Emoji.Bulb,
+                NotifyType.Success => Emoji.Up,
+                NotifyType.Failure => Emoji.X
+            },
             Username = "Kbo Sync"
         });
         
         if(!postAsync)
-            _logger.LogWarning("Could not notify slack");
-        
+        {
+            _logger.LogWarning($"Slack bericht kon niet verstuurd worden: '{message.Value}' ({message.Type})");
+        }
+        else
+        {
+            _logger.LogInformation($"Slack bericht verstuurd: '{message.Value}' ({message.Type})");
+        }
     }
 }
