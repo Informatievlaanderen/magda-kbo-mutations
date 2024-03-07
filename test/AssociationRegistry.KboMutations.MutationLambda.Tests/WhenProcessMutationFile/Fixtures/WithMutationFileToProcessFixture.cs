@@ -2,6 +2,7 @@
 using Amazon.S3;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
@@ -18,7 +19,7 @@ public abstract class WithMutationFileToProcessFixture : WithLocalstackFixture
     private Mock<IAmazonSQS> _sqsClientMock;
     public ILambdaLogger LambdaLogger { get; }
     public KboMutationsConfiguration KboMutationsConfiguration { get; }
-    public AmazonKboSyncConfiguration KboSyncConfiguration { get; }
+    public KboSyncConfiguration KboSyncConfiguration { get; }
     
     protected override Task SetupAsync()
     {

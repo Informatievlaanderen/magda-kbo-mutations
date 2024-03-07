@@ -5,6 +5,7 @@ using Amazon.S3.Model;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Messages;
 using AssocationRegistry.KboMutations.Models;
 using AssocationRegistry.KboMutations.Notifications;
@@ -19,7 +20,7 @@ public class MutatieBestandProcessor
     private readonly FtpUriBuilder _baseUriBuilder;
     private readonly IFtpsClient _ftpsClient;
     private readonly KboMutationsConfiguration _kboMutationsConfiguration;
-    private readonly AmazonKboSyncConfiguration _kboSyncConfiguration;
+    private readonly KboSyncConfiguration _kboSyncConfiguration;
     private readonly ILambdaLogger _logger;
     private readonly INotifier _notifier;
     private readonly IAmazonS3 _s3Client;
@@ -27,7 +28,7 @@ public class MutatieBestandProcessor
 
     public MutatieBestandProcessor(ILambdaLogger logger, IFtpsClient ftpsClient, IAmazonS3 s3Client,
         IAmazonSQS sqsClient, KboMutationsConfiguration kboMutationsConfiguration,
-        AmazonKboSyncConfiguration kboSyncConfiguration, INotifier notifier)
+        KboSyncConfiguration kboSyncConfiguration, INotifier notifier)
     {
         _logger = logger;
         _ftpsClient = ftpsClient;

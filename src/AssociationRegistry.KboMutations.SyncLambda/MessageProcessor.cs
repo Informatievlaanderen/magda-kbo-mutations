@@ -4,6 +4,7 @@ using Amazon.Lambda.SQSEvents;
 using Amazon.S3;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Messages;
 using AssociationRegistry.Acties.SyncKbo;
 using AssociationRegistry.Framework;
@@ -17,15 +18,15 @@ namespace AssociationRegistry.KboMutations.SyncLambda;
 
 public class MessageProcessor
 {
-    private readonly AmazonKboSyncConfiguration _amazonKboSyncConfiguration;
+    private readonly KboSyncConfiguration _kboSyncConfiguration;
     private readonly IAmazonS3 _s3Client;
     private readonly IAmazonSQS _sqsClient;
 
-    public MessageProcessor(IAmazonS3 s3Client, IAmazonSQS sqsClient, AmazonKboSyncConfiguration amazonKboSyncConfiguration)
+    public MessageProcessor(IAmazonS3 s3Client, IAmazonSQS sqsClient, KboSyncConfiguration kboSyncConfiguration)
     {
         _s3Client = s3Client;
         _sqsClient = sqsClient;
-        _amazonKboSyncConfiguration = amazonKboSyncConfiguration;
+        _kboSyncConfiguration = kboSyncConfiguration;
     }
 
     public async Task ProcessMessage(SQSEvent sqsEvent, 
@@ -34,9 +35,9 @@ public class MessageProcessor
         IVerenigingsRepository repository,
         CancellationToken cancellationToken)
     {
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileBucketName)}:{_amazonKboSyncConfiguration.MutationFileBucketName}");
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileQueueUrl)}:{_amazonKboSyncConfiguration.MutationFileQueueUrl}");
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.SyncQueueUrl)}:{_amazonKboSyncConfiguration.SyncQueueUrl}");
+        contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileBucketName)}:{_kboSyncConfiguration.MutationFileBucketName}");
+        contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileQueueUrl)}:{_kboSyncConfiguration.MutationFileQueueUrl}");
+        contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.SyncQueueUrl)}:{_kboSyncConfiguration.SyncQueueUrl}");
 
         var handler = new SyncKboCommandHandler(geefOndernemingService);
         

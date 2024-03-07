@@ -7,6 +7,7 @@ using Amazon.S3;
 using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Configuration;
 using AssociationRegistry.Events;
 using AssociationRegistry.EventStore;
 using AssociationRegistry.KboMutations.SyncLambda.Aws;
@@ -55,7 +56,7 @@ public class Function
             .GetSection(ParamNamesConfiguration.Section)
             .Get<ParamNamesConfiguration>();
 
-        var processor = new MessageProcessor(s3Client, sqsClient, new AmazonKboSyncConfiguration
+        var processor = new MessageProcessor(s3Client, sqsClient, new KboSyncConfiguration
         {
             MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
             SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!

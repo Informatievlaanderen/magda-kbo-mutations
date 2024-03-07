@@ -2,24 +2,6 @@
 
 namespace AssociationRegistry.KboMutations.MutationFileLambda;
 
-public readonly record struct KboMutationFileLambdaGestart : IMessage
-{
-    private readonly int _messageReceiveCount;
-
-    public KboMutationFileLambdaGestart(int messageReceiveCount) => _messageReceiveCount = messageReceiveCount;
-    public string Value => $"KBO mutation file lambda gestart. Aantal berichten te verwerken: {_messageReceiveCount}";
-    public NotifyType Type => NotifyType.Success;
-}
-
-public readonly record struct KboMutationFileLambdaVoltooid : IMessage
-{
-    private readonly int _messageProcessCount;
-
-    public KboMutationFileLambdaVoltooid(int messageProcessCount) => _messageProcessCount = messageProcessCount;
-    public string Value => $"KBO mutation file lambda voltooid. Aantal berichten verwerkt: {_messageProcessCount}";
-    public NotifyType Type => NotifyType.Success;
-}
-
 public readonly record struct KboMutationFileLambdaGefaald : IMessage
 {
     private readonly Exception _exception;
