@@ -7,6 +7,7 @@ using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Messages;
 using AssocationRegistry.KboMutations.Models;
+using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;

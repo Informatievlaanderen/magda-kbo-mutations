@@ -1,4 +1,5 @@
 using Amazon.Lambda.Core;
+using AssocationRegistry.KboMutations.Notifications;
 using Slack.Webhooks;
 
 namespace AssociationRegistry.KboMutations.Notifications;

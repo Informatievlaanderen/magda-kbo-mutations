@@ -1,4 +1,4 @@
-namespace AssociationRegistry.KboMutations.Notifications;
+namespace AssocationRegistry.KboMutations.Notifications;
 
 public interface INotifier
 {
