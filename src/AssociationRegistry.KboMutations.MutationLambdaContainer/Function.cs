@@ -6,6 +6,7 @@ using Amazon.S3;
 using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;

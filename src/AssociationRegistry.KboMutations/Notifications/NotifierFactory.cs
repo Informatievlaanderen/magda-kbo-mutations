@@ -1,4 +1,5 @@
 using Amazon.Lambda.Core;
+using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.Configuration;
 
 namespace AssociationRegistry.KboMutations.Notifications;
