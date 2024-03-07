@@ -71,8 +71,8 @@ public readonly record struct KboMutationLambdaQueueStatus : IMessage
         {
             var sb = new StringBuilder();
             sb.AppendLine($"KBO mutation file queue statistieken:");
-            sb.AppendLine($"- Queue ARN: {_queueArn}");
-            sb.AppendLine($"- Aantal berichten: {(_approximateMessageCount.Equals(0) ? "Geen" : _approximateMessageCount)}");
+            sb.AppendLine($"- Queue : {_queueArn[(_queueArn.LastIndexOf(':') + 1)..]}");
+            sb.AppendLine($"- Aantal berichten : {(_approximateMessageCount.Equals(0) ? "Geen" : _approximateMessageCount)} resterende berichten.");
             return sb.ToString();
         }
     }
