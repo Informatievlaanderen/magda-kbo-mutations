@@ -2,6 +2,7 @@
 using Amazon.S3;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Configuration;
 using Xunit;
 
 namespace AssociationRegistry.KboMutations.Tests.Fixtures;
@@ -26,7 +27,7 @@ public abstract class WithLocalstackFixture : IAsyncLifetime
             ServiceURL = "http://localhost:4566",
         });
         
-        KboSyncConfiguration = new AmazonKboSyncConfiguration
+        KboSyncConfiguration = new KboSyncConfiguration
         {
             MutationFileBucketName = mutationFileBucket,
             MutationFileQueueUrl = mutationFileQueue,
@@ -36,7 +37,7 @@ public abstract class WithLocalstackFixture : IAsyncLifetime
     
     public IAmazonS3 AmazonS3Client { get; }
     public IAmazonSQS AmazonSqsClient { get; }
-    public AmazonKboSyncConfiguration KboSyncConfiguration { get; private set; }
+    public KboSyncConfiguration KboSyncConfiguration { get; private set; }
 
     public async Task InitializeAsync()
     {

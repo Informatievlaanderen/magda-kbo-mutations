@@ -6,6 +6,7 @@ using Amazon.S3;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Messages;
 using AssocationRegistry.KboMutations.Models;
 using AssocationRegistry.KboMutations.Notifications;
@@ -17,7 +18,7 @@ namespace AssociationRegistry.KboMutations.MutationFileLambda;
 
 public class MessageProcessor
 {
-    private readonly AmazonKboSyncConfiguration _amazonKboSyncConfiguration;
+    private readonly KboSyncConfiguration _kboSyncConfiguration;
     private readonly IAmazonS3 _s3Client;
     private readonly IAmazonSQS _sqsClient;
     private readonly INotifier _notifier;
@@ -25,21 +26,21 @@ public class MessageProcessor
     public MessageProcessor(IAmazonS3 s3Client, 
         IAmazonSQS sqsClient,
         INotifier notifier,
-        AmazonKboSyncConfiguration amazonKboSyncConfiguration)
+        KboSyncConfiguration kboSyncConfiguration)
     {
         _s3Client = s3Client;
         _sqsClient = sqsClient;
         _notifier = notifier;
-        _amazonKboSyncConfiguration = amazonKboSyncConfiguration;
+        _kboSyncConfiguration = kboSyncConfiguration;
     }
 
     public async Task ProcessMessage(SQSEvent sqsEvent, 
         ILambdaLogger contextLogger,
         CancellationToken cancellationToken)
     {
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileBucketName)}:{_amazonKboSyncConfiguration.MutationFileBucketName}");
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.MutationFileQueueUrl)}:{_amazonKboSyncConfiguration.MutationFileQueueUrl}");
-        contextLogger.LogInformation($"{nameof(_amazonKboSyncConfiguration.SyncQueueUrl)}:{_amazonKboSyncConfiguration.SyncQueueUrl}");
+        contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileBucketName)}:{_kboSyncConfiguration.MutationFileBucketName}");
+        contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileQueueUrl)}:{_kboSyncConfiguration.MutationFileQueueUrl}");
+        contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.SyncQueueUrl)}:{_kboSyncConfiguration.SyncQueueUrl}");
 
         foreach (var record in sqsEvent.Records)
         {
@@ -75,7 +76,7 @@ public class MessageProcessor
         CancellationToken cancellationToken)
     {
         var fetchMutatieBestandResponse = await _s3Client.GetObjectAsync(
-            _amazonKboSyncConfiguration.MutationFileBucketName, 
+            _kboSyncConfiguration.MutationFileBucketName, 
             message.Key, 
             cancellationToken);
  
@@ -98,9 +99,9 @@ public class MessageProcessor
                 $"{mutatielijn.Ondernemingsnummer}-{mutatielijn.DatumModificatie.Ticks}", messageBody));
         }
 
-        var response = await _sqsClient.SendMessageBatchAsync(_amazonKboSyncConfiguration.SyncQueueUrl, messagesToSend, cancellationToken);
+        var response = await _sqsClient.SendMessageBatchAsync(_kboSyncConfiguration.SyncQueueUrl, messagesToSend, cancellationToken);
 
-        await _s3Client.DeleteObjectAsync(_amazonKboSyncConfiguration.MutationFileBucketName, message.Key, cancellationToken);
+        await _s3Client.DeleteObjectAsync(_kboSyncConfiguration.MutationFileBucketName, message.Key, cancellationToken);
 
         return response;
     }

@@ -1,4 +1,5 @@
-﻿using AssocationRegistry.KboMutations.Notifications;
+﻿using System.Text;
+using AssocationRegistry.KboMutations.Notifications;
 
 namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
 
@@ -51,4 +52,32 @@ public readonly record struct KboMutationLambdaKonBestandNietVerwerken : IMessag
     }
     public string Value => $"KBO mutation lambda kon een bestand niet verwerken. Bestandsnaam: '{_fileName}' ({_exception.Message})";
     public NotifyType Type => NotifyType.Failure;
+}
+
+public readonly record struct KboMutationLambdaQueueStatus : IMessage
+{
+    private readonly string _queueArn;
+    private readonly int _approximateMessageCount;
+
+    public KboMutationLambdaQueueStatus(string queueArn, int approximateMessageCount)
+    {
+        _queueArn = queueArn;
+        _approximateMessageCount = approximateMessageCount;
+    }
+
+    public string Value
+    {
+        get
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"KBO mutation file queue statistieken:");
+            sb.AppendLine($"- Queue ARN: {_queueArn}");
+            sb.AppendLine($"- Aantal berichten: {(_approximateMessageCount.Equals(0) ? "Geen" : _approximateMessageCount)}");
+            return sb.ToString();
+        }
+    }
+
+    public NotifyType Type => _approximateMessageCount > 0 
+        ? NotifyType.Failure 
+        : NotifyType.Success;
 }

@@ -8,6 +8,7 @@ using Amazon.S3;
 using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Configuration;
 using AssociationRegistry.KboMutations.Configuration;
 using AssociationRegistry.KboMutations.Notifications;
 using Microsoft.Extensions.Configuration;
@@ -52,9 +53,9 @@ public class Function
 
         _processor = new MessageProcessor(s3Client, sqsClient, notifier, amazonKboSyncConfiguration);
 
-        await notifier.Notify(new KboMutationFileLambdaGestart(@event.Records.Count));
+        context.Logger.LogInformation($"KBO mutation file lambda gestart. Aantal berichten te verwerken: {@event.Records.Count}");
         await _processor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
-        await notifier.Notify(new KboMutationFileLambdaGestart(@event.Records.Count));
+        context.Logger.LogInformation($"KBO mutation file lambda voltooid.");
     }
 
     private static ParamNamesConfiguration GetParamNamesConfiguration(IConfigurationRoot configurationRoot)
@@ -68,11 +69,11 @@ public class Function
         return paramNamesConfiguration;
     }
 
-    private static AmazonKboSyncConfiguration GetAmazonKboSyncConfiguration(IConfigurationRoot configurationRoot)
+    private static KboSyncConfiguration GetAmazonKboSyncConfiguration(IConfigurationRoot configurationRoot)
     {
         var awsConfigurationSection = configurationRoot.GetSection("AWS");
 
-        var amazonKboSyncConfiguration = new AmazonKboSyncConfiguration
+        var amazonKboSyncConfiguration = new KboSyncConfiguration
         {
             MutationFileBucketName = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
             MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
