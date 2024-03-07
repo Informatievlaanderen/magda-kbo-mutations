@@ -3,15 +3,6 @@ using AssocationRegistry.KboMutations.Notifications;
 
 namespace AssociationRegistry.KboMutations.MutationFileLambda;
 
-public readonly record struct KboMutationFileLambdaGefaald : IMessage
-{
-    private readonly Exception _exception;
-
-    public KboMutationFileLambdaGefaald(Exception exception) => _exception = exception;
-    public string Value => $"KBO mutation file lambda gefaald. {_exception.Message}";
-    public NotifyType Type => NotifyType.Failure;
-}
-
 public readonly record struct KboMutationFileLambdaSqsBerichtBatchNietVerstuurd : IMessage
 {
     private readonly int _failedMessageCount;

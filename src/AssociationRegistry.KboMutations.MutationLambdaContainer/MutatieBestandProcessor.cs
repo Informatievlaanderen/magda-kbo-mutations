@@ -47,44 +47,50 @@ public class MutatieBestandProcessor
         await _notifier.Notify(new KboMutationLambdaBestandenOpgehaald(magdaMutatieBestanden.Count));
 
         foreach (var magdaMutatieBestand in magdaMutatieBestanden)
-            try
+            await ProcessBestandAsync(magdaMutatieBestand, cancellationToken);
+    }
+
+    private async Task ProcessBestandAsync(MagdaMutatieBestand magdaMutatieBestand, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var stream = new MemoryStream();
+
+            // Download file from MAGDA
+            var fullNameUri = _baseUriBuilder.WithPath(magdaMutatieBestand.FtpPath).ToString();
+            var fileName = Path.GetFileName(fullNameUri);
+            var localDestinationFilePath = Path.Join(_kboMutationsConfiguration.DownloadPath, fileName);
+
+            if (!_ftpsClient.Download(stream, fullNameUri, localDestinationFilePath)) throw new ApplicationException($"Bestand {magdaMutatieBestand.Name} kon niet opgehaald worden");
+
+            stream.Seek(0, SeekOrigin.Begin);
+
+            // Save file on S3
+            await _s3Client.PutObjectAsync(new PutObjectRequest
             {
-                using var stream = new MemoryStream();
+                BucketName = _kboSyncConfiguration.MutationFileBucketName,
+                Key = magdaMutatieBestand.Name,
+                InputStream = stream
+            }, cancellationToken);
+            _logger.LogInformation($"S3:PutObject for filename '{magdaMutatieBestand.Name}'");
 
-                // Download file from MAGDA
-                var fullNameUri = _baseUriBuilder.WithPath(magdaMutatieBestand.FtpPath).ToString();
-                var fileName = Path.GetFileName(fullNameUri);
-                var localDestinationFilePath = Path.Join(_kboMutationsConfiguration.DownloadPath, fileName);
-
-                if (!_ftpsClient.Download(stream, fullNameUri, localDestinationFilePath)) throw new ApplicationException($"Bestand {magdaMutatieBestand.Name} kon niet opgehaald worden");
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                // Save file on S3
-                await _s3Client.PutObjectAsync(new PutObjectRequest
-                {
-                    BucketName = _kboSyncConfiguration.MutationFileBucketName,
-                    Key = magdaMutatieBestand.Name,
-                    InputStream = stream
-                }, cancellationToken);
-                _logger.LogInformation($"S3:PutObject for filename '{magdaMutatieBestand.Name}'");
-
-                // Notify about file on SQS
-                await _sqsClient.SendMessageAsync(new SendMessageRequest(
-                    _kboSyncConfiguration.MutationFileQueueUrl,
-                    JsonSerializer.Serialize(new TeVerwerkenMutatieBestandMessage(magdaMutatieBestand.Name))
-                )
-                {
-                    MessageGroupId = Guid.NewGuid().ToString()
-                }, cancellationToken);
-
-                // Archive file from MAGDA
-                ArchiveerMagdaMutatieBestand(magdaMutatieBestand);
-            }
-            catch (Exception ex)
+            // Notify about file on SQS
+            await _sqsClient.SendMessageAsync(new SendMessageRequest(
+                _kboSyncConfiguration.MutationFileQueueUrl,
+                JsonSerializer.Serialize(new TeVerwerkenMutatieBestandMessage(magdaMutatieBestand.Name))
+            )
             {
-                await _notifier.Notify(new KboMutationLambdaKonBestandNietVerwerken(magdaMutatieBestand.Name, ex));
-            }
+                MessageGroupId = Guid.NewGuid().ToString()
+            }, cancellationToken);
+
+            // Archive file from MAGDA
+            ArchiveerMagdaMutatieBestand(magdaMutatieBestand);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"KBO mutation lambda kon een bestand niet verwerken. Bestandsnaam: '{magdaMutatieBestand.Name}' ({ex.Message})");
+            throw;
+        }
     }
 
     private IEnumerable<MagdaMutatieBestand> GetMagdaMutatieBestanden()
