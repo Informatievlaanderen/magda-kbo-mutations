@@ -79,9 +79,7 @@ public class Function
             new MagdaFacade(magdaOptions, loggerFactory.CreateLogger<MagdaFacade>()),
             new TemporaryMagdaVertegenwoordigersSection(),
             loggerFactory.CreateLogger<MagdaGeefVerenigingService>());
-
-        context.Logger.LogInformation(JsonSerializer.Serialize(magdaOptions));
-
+        
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
         await processor!.ProcessMessage(@event, context.Logger, geefOndernemingService, repository,
             CancellationToken.None);
