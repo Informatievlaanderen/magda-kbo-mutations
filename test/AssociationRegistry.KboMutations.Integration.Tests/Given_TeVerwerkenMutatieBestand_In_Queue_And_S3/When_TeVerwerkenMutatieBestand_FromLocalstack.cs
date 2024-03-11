@@ -55,6 +55,6 @@ public class When_TeVerwerkenMutatieBestand_FromLocalstack : IClassFixture<With_
                 typeof(VerenigingMetRechtspersoonlijkheidWerdGeregistreerd),
                 typeof(NaamWerdGewijzigdInKbo),
                 typeof(KorteNaamWerdGewijzigdInKbo),
-                typeof(KboSyncSuccessful));
+                typeof(SynchronisatieMetKboWasSuccesvol));
     }
 }

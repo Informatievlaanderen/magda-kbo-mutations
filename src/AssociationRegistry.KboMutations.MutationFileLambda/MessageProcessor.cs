@@ -9,6 +9,8 @@ using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Messages;
 using AssocationRegistry.KboMutations.Models;
 using AssocationRegistry.KboMutations.Notifications;
+using AssociationRegistry.Kbo;
+using AssociationRegistry.Notifications;
 using CsvHelper;
 using CsvHelper.Configuration;
 
@@ -94,7 +96,8 @@ public class MessageProcessor
         {
             contextLogger.LogInformation($"Sending {mutatielijn.Ondernemingsnummer} to synchronize queue");
 
-            var messageBody = JsonSerializer.Serialize(new TeSynchroniserenKboNummerMessage(mutatielijn.Ondernemingsnummer, fetchMutatieBestandResponse.Key));
+            var messageBody = JsonSerializer.Serialize(
+                new TeSynchroniserenKboNummerMessage(mutatielijn.Ondernemingsnummer));
 
             messagesToSend.Add(new SendMessageBatchRequestEntry(
                 $"{mutatielijn.Ondernemingsnummer}-{mutatielijn.DatumModificatie.Ticks}", messageBody));

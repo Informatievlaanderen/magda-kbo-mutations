@@ -2,6 +2,7 @@
 using Amazon.Lambda.TestUtilities;
 using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
+using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.EventStore;
 using AssociationRegistry.Framework;
 using AssociationRegistry.Kbo;
@@ -9,7 +10,6 @@ using AssociationRegistry.KboMutations.MutationLambdaContainer;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
-using AssociationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
 using AssociationRegistry.Vereniging;
 using AutoBogus;

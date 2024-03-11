@@ -1,17 +1,17 @@
 using Amazon.Lambda.Core;
-using AssocationRegistry.KboMutations.Notifications;
-using AssociationRegistry.KboMutations.Configuration;
+using AssocationRegistry.KboMutations.Configuration;
+using AssociationRegistry.Notifications;
 
-namespace AssociationRegistry.KboMutations.Notifications;
+namespace AssocationRegistry.KboMutations.Notifications;
 
 public class NotifierFactory
 {
     private readonly SsmClientWrapper _ssmClientWrapper;
-    private readonly ParamNamesConfiguration _paramNames;
+    private readonly ISlackConfiguration _paramNames;
     private readonly ILambdaLogger _logger;
 
     public NotifierFactory(SsmClientWrapper ssmClientWrapper, 
-        ParamNamesConfiguration paramNames,
+        ISlackConfiguration paramNames,
         ILambdaLogger logger)
     {
         _ssmClientWrapper = ssmClientWrapper;

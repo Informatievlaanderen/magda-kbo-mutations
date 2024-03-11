@@ -3,10 +3,10 @@ using Amazon.S3;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Configuration;
+using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.MutationLambdaContainer;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Abstractions;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
-using AssociationRegistry.KboMutations.Notifications;
 using AssociationRegistry.KboMutations.Tests.Fixtures;
 using Moq;
 

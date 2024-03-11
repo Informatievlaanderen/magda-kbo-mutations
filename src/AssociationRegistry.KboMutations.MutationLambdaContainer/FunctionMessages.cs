@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using AssocationRegistry.KboMutations.Notifications;
+using AssociationRegistry.Notifications;
 
 namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
 

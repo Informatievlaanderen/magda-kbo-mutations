@@ -10,6 +10,8 @@ using AssociationRegistry.Acties.SyncKbo;
 using AssociationRegistry.Framework;
 using AssociationRegistry.Kbo;
 using AssociationRegistry.Magda;
+using AssociationRegistry.Notifications;
+using AssociationRegistry.Notifications.Messages;
 using AssociationRegistry.Vereniging;
 using NodaTime;
 using ResultNet;
@@ -33,19 +35,29 @@ public class MessageProcessor
         ILambdaLogger contextLogger,
         MagdaGeefVerenigingService geefOndernemingService,
         IVerenigingsRepository repository,
+        INotifier notifier,
         CancellationToken cancellationToken)
     {
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileBucketName)}:{_kboSyncConfiguration.MutationFileBucketName}");
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileQueueUrl)}:{_kboSyncConfiguration.MutationFileQueueUrl}");
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.SyncQueueUrl)}:{_kboSyncConfiguration.SyncQueueUrl}");
 
-        var handler = new SyncKboCommandHandler(geefOndernemingService);
+        var handler = new SyncKboCommandHandler(geefOndernemingService, notifier);
         
         foreach (var record in sqsEvent.Records)
         {
+            await TryProcessRecord(contextLogger, repository, notifier, cancellationToken, record, handler);
+        }
+    }
+
+    private static async Task TryProcessRecord(ILambdaLogger contextLogger, IVerenigingsRepository repository,
+        INotifier notifier, CancellationToken cancellationToken, SQSEvent.SQSMessage record, SyncKboCommandHandler handler)
+    {
+        try
+        {
             var message = JsonSerializer.Deserialize<TeSynchroniserenKboNummerMessage>(record.Body);
             
-            contextLogger.LogInformation($"Processing record: {message.KboNummer} from file '{message.Filename}'");
+            contextLogger.LogInformation($"Processing record: {message.KboNummer}");
 
             var syncKboCommand = new SyncKboCommand(KboNummer.Create(message.KboNummer));
             var commandMetadata = new CommandMetadata("KboSync", SystemClock.Instance.GetCurrentInstant(), Guid.NewGuid(), null);
@@ -54,6 +66,12 @@ public class MessageProcessor
             var commandResult = await handler.Handle(commandEnvelope, repository, cancellationToken);
 
             contextLogger.LogInformation($"Sync resulted in sequence '{commandResult.Sequence}'. HasChanges? {commandResult.HasChanges()}");
+        }
+        catch(Exception ex)
+        {
+            await notifier.Notify(new KboSyncLambdaGefaald(record.Body, ex));
+
+            throw;
         }
     }
 }

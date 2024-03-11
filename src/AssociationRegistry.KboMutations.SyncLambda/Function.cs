@@ -8,14 +8,12 @@ using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Configuration;
-using AssociationRegistry.Events;
+using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.EventStore;
-using AssociationRegistry.KboMutations.SyncLambda.Aws;
 using AssociationRegistry.KboMutations.SyncLambda.Configuration;
 using AssociationRegistry.Magda;
 using AssociationRegistry.Magda.Configuration;
 using AssociationRegistry.Magda.Models;
-using AssociationRegistry.Vereniging;
 using Marten;
 using Marten.Events;
 using Marten.Services;
@@ -24,7 +22,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Npgsql;
 using Weasel.Core;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using SsmClientWrapper = AssocationRegistry.KboMutations.SsmClientWrapper;
 
 namespace AssociationRegistry.KboMutations.SyncLambda;
 
@@ -76,12 +74,16 @@ public class Function
         
         var geefOndernemingService = new MagdaGeefVerenigingService(
             new MagdaCallReferenceRepository(store.LightweightSession()),
-            new MagdaFacade(magdaOptions, loggerFactory.CreateLogger<MagdaFacade>()),
+            new MagdaClient(magdaOptions, loggerFactory.CreateLogger<MagdaClient>()),
             new TemporaryMagdaVertegenwoordigersSection(),
             loggerFactory.CreateLogger<MagdaGeefVerenigingService>());
+
+        var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger)
+            .Create();
         
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
         await processor!.ProcessMessage(@event, context.Logger, geefOndernemingService, repository,
+            notifier,
             CancellationToken.None);
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
     }

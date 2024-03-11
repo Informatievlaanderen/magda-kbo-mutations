@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using AssocationRegistry.KboMutations.Messages;
+using AssociationRegistry.Kbo;
 using AssociationRegistry.KboMutations.Integration.Tests.Given_TeVerwerkenMutatieBestand_In_Queue_And_S3.Fixtures;
 using FluentAssertions;
 using Xunit;
@@ -27,8 +28,7 @@ public class When_Running_The_Lambda : IClassFixture<With_TeVerwerkenMutatieBest
     {
         var expectedMutationFiles = _fixture.MutatieLijnen
             .Select(x => new TeSynchroniserenKboNummerMessage(
-                x.Ondernemingsnummer,
-                _fixture.TeVerwerkenMutatieBestandMessage.Key))
+                x.Ondernemingsnummer))
             .ToList();
 
         _fixture.ReceivedMessages.Select(x => JsonSerializer.Deserialize<TeSynchroniserenKboNummerMessage>(x.Body))

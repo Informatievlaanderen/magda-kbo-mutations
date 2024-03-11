@@ -1,6 +1,8 @@
+using AssocationRegistry.KboMutations.Configuration;
+
 namespace AssociationRegistry.KboMutations.SyncLambda.Configuration;
 
-public class ParamNamesConfiguration
+public class ParamNamesConfiguration: ISlackConfiguration
 {
     public static string Section = "ParamNames";
 

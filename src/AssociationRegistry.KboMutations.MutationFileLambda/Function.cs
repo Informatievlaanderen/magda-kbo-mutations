@@ -9,8 +9,8 @@ using Amazon.SimpleSystemsManagement;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Configuration;
-using AssociationRegistry.KboMutations.Configuration;
-using AssociationRegistry.KboMutations.Notifications;
+using AssocationRegistry.KboMutations.Notifications;
+using AssociationRegistry.KboMutations.MutationFileLambda.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace AssociationRegistry.KboMutations.MutationFileLambda;
@@ -58,7 +58,7 @@ public class Function
         context.Logger.LogInformation($"KBO mutation file lambda voltooid.");
     }
 
-    private static ParamNamesConfiguration GetParamNamesConfiguration(IConfigurationRoot configurationRoot)
+    private static ISlackConfiguration GetParamNamesConfiguration(IConfigurationRoot configurationRoot)
     {
         var paramNamesConfiguration = configurationRoot
             .GetSection(ParamNamesConfiguration.Section)
