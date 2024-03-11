@@ -20,6 +20,12 @@
         <PackageReference Include="Be.Vlaanderen.Basisregisters.AssociationRegistry" />
         <PackageReference Include="Be.Vlaanderen.Basisregisters.AssociationRegistry.Magda" />
         <PackageReference Include="NodaTime" />
+        <PackageReference Include="OpenTelemetry.Contrib.Instrumentation.AWS" />
+        <PackageReference Include="OpenTelemetry.Contrib.Instrumentation.AWSLambda" />
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AWS" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AWSLambda" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\AssociationRegistry.KboMutations\AssociationRegistry.KboMutations.csproj" />

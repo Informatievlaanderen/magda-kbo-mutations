@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
@@ -22,7 +23,12 @@ using Marten.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Npgsql;
+using OpenTelemetry;
+using OpenTelemetry.Instrumentation.AWSLambda;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Weasel.Core;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -30,16 +36,64 @@ namespace AssociationRegistry.KboMutations.SyncLambda;
 
 public class Function
 {
+    private static TracerProvider? _tracerProvider;
+
     private static async Task Main()
     {
-        var handler = FunctionHandler;
+        var executingAssembly = Assembly.GetEntryAssembly()!;
+        var serviceName = executingAssembly.GetName().Name!; // todo
+        var assemblyVersion = executingAssembly.GetName().Version?.ToString() ?? "unknown";
+
+        Func<ResourceBuilder, ResourceBuilder> configureResource = r =>
+        {
+            r
+                .AddService(
+                    serviceName,
+                    serviceVersion: assemblyVersion,
+                    serviceInstanceId: Environment.MachineName)
+                .AddAttributes(
+                    new Dictionary<string, object>
+                    {
+                        ["deployment.environment"] =
+                            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                                ?.ToLowerInvariant()
+                            ?? "unknown", // todo
+                    });
+            return r;
+        };
+
+        _tracerProvider = Sdk.CreateTracerProviderBuilder()
+            .SetResourceBuilder(configureResource(ResourceBuilder.CreateDefault()))
+            .AddHttpClientInstrumentation()
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri("todo");
+                options.Headers = "Authorization=Bearer todo";
+            })
+            .AddAWSLambdaConfigurations(options =>
+            {
+                options.DisableAwsXRayContextExtraction = true;
+            })
+            .Build();
+
+        
+        var handler = TracingFunctionHandler;
         await LambdaBootstrapBuilder.Create(handler, new SourceGeneratorLambdaJsonSerializer<LambdaFunctionJsonSerializerContext>())
             .Build()
             .RunAsync();
     }
+    
+    public static Task TracingFunctionHandler(SQSEvent @event, ILambdaContext context)
+    {
+        context.Logger.LogInformation("Start tracing");
+
+        return AWSLambdaWrapper.Trace(_tracerProvider, FunctionHandler, @event, context);
+    }
+
 
     private static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
+        context.Logger.LogInformation("Start");
         var s3Client = new AmazonS3Client();
         var sqsClient = new AmazonSQSClient();
 
