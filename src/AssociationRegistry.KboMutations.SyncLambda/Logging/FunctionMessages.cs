@@ -1,7 +1,6 @@
-﻿using System.Text;
-using AssociationRegistry.Notifications;
+﻿using AssociationRegistry.Notifications;
 
-namespace AssociationRegistry.KboMutations.SyncLambda;
+namespace AssociationRegistry.KboMutations.SyncLambda.Logging;
 
 public readonly record struct KboSyncLambdaGefaald : IMessage
 {

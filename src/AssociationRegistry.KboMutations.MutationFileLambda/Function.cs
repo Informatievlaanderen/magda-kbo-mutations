@@ -44,7 +44,7 @@ public class Function
             .AddEnvironmentVariables()
             .Build();
         
-        var amazonKboSyncConfiguration = GetAmazonKboSyncConfiguration(configurationRoot);
+        var amazonKboSyncConfiguration = GetKboSyncConfiguration(configurationRoot);
         var ssmClientWrapper = new SsmClientWrapper(new AmazonSimpleSystemsManagementClient());
         var paramNamesConfiguration = GetParamNamesConfiguration(configurationRoot);
         var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger).TryCreate();
@@ -69,27 +69,27 @@ public class Function
         return paramNamesConfiguration;
     }
 
-    private static KboSyncConfiguration GetAmazonKboSyncConfiguration(IConfigurationRoot configurationRoot)
+    private static KboSyncConfiguration GetKboSyncConfiguration(IConfigurationRoot configurationRoot)
     {
-        var awsConfigurationSection = configurationRoot.GetSection("AWS");
+        var awsConfigurationSection = configurationRoot.GetSection(KboSyncConfiguration.Section);
 
-        var amazonKboSyncConfiguration = new KboSyncConfiguration
+        var kboSyncConfiguration = new KboSyncConfiguration
         {
             MutationFileBucketName = awsConfigurationSection[nameof(WellKnownBucketNames.MutationFileBucketName)],
             MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
             SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
         };
 
-        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.SyncQueueUrl))
-            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.SyncQueueUrl)} cannot be null or empty");
+        if (string.IsNullOrWhiteSpace(kboSyncConfiguration.SyncQueueUrl))
+            throw new ArgumentException($"{nameof(kboSyncConfiguration.SyncQueueUrl)} cannot be null or empty");
         
-        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.MutationFileQueueUrl))
-            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.MutationFileQueueUrl)} cannot be null or empty");
+        if (string.IsNullOrWhiteSpace(kboSyncConfiguration.MutationFileQueueUrl))
+            throw new ArgumentException($"{nameof(kboSyncConfiguration.MutationFileQueueUrl)} cannot be null or empty");
         
-        if (string.IsNullOrWhiteSpace(amazonKboSyncConfiguration.MutationFileBucketName))
-            throw new ArgumentException($"{nameof(amazonKboSyncConfiguration.MutationFileBucketName)} cannot be null or empty");
+        if (string.IsNullOrWhiteSpace(kboSyncConfiguration.MutationFileBucketName))
+            throw new ArgumentException($"{nameof(kboSyncConfiguration.MutationFileBucketName)} cannot be null or empty");
         
-        return amazonKboSyncConfiguration;
+        return kboSyncConfiguration;
     }
 }
 

@@ -1,14 +1,12 @@
-﻿using Amazon.SQS.Model;
-using AssocationRegistry.KboMutations.Notifications;
-using AssociationRegistry.Notifications;
+﻿using AssociationRegistry.Notifications;
 
-namespace AssociationRegistry.KboMutations.MutationFileLambda;
+namespace AssociationRegistry.KboMutations.MutationFileLambda.Logging;
 
 public readonly record struct KboMutationFileLambdaSqsBerichtBatchNietVerstuurd : IMessage
 {
     private readonly int _failedMessageCount;
 
-    public KboMutationFileLambdaSqsBerichtBatchNietVerstuurd(List<BatchResultErrorEntry> batchResponseFailed) => _failedMessageCount = batchResponseFailed.Count;
+    public KboMutationFileLambdaSqsBerichtBatchNietVerstuurd(int failedMessageCount) => _failedMessageCount = failedMessageCount;
     public string Value => $"KBO mutation file lambda kon {_failedMessageCount} berichten niet naar SQS versturen.";
     public NotifyType Type => NotifyType.Failure;
 }
@@ -17,7 +15,7 @@ public readonly record struct KboMutationFileLambdaSqsBerichtBatchVerstuurd : IM
 {
     private readonly int _messageCount;
 
-    public KboMutationFileLambdaSqsBerichtBatchVerstuurd(List<SendMessageBatchResultEntry> batchResponseSuccesful) => _messageCount = batchResponseSuccesful.Count;
+    public KboMutationFileLambdaSqsBerichtBatchVerstuurd(int successfulMessageCount) => _messageCount = successfulMessageCount;
     public string Value => $"KBO mutation file lambda kon {_messageCount} berichten naar SQS versturen.";
     public NotifyType Type => NotifyType.Success;
 }

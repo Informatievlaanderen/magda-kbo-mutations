@@ -2,7 +2,7 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.Logging;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace AssociationRegistry.KboMutations.SyncLambda;
+namespace AssociationRegistry.KboMutations.SyncLambda.Logging;
 
 public class LambdaLoggerProvider : ILoggerProvider
 {

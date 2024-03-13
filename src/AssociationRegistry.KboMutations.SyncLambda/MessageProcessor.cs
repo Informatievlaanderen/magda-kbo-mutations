@@ -9,6 +9,7 @@ using AssocationRegistry.KboMutations.Messages;
 using AssociationRegistry.Acties.SyncKbo;
 using AssociationRegistry.Framework;
 using AssociationRegistry.Kbo;
+using AssociationRegistry.KboMutations.SyncLambda.Logging;
 using AssociationRegistry.Magda;
 using AssociationRegistry.Notifications;
 using AssociationRegistry.Notifications.Messages;

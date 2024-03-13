@@ -11,6 +11,8 @@ using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.EventStore;
 using AssociationRegistry.KboMutations.SyncLambda.Configuration;
+using AssociationRegistry.KboMutations.SyncLambda.JsonSerialization;
+using AssociationRegistry.KboMutations.SyncLambda.Logging;
 using AssociationRegistry.Magda;
 using AssociationRegistry.Magda.Configuration;
 using AssociationRegistry.Magda.Models;
@@ -127,9 +129,7 @@ public class Function
         opts.Schema.For<MagdaCallReference>().Identity(x => x.Reference);
 
         var connectionString = connectionStringBuilder.ToString();
-            
-        contextLogger.LogInformation(connectionString);
-            
+        
         opts.Connection(connectionString);
         opts.Events.StreamIdentity = StreamIdentity.AsString;
         opts.Serializer(CreateCustomMartenSerializer());

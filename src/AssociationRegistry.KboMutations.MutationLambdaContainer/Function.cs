@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
@@ -9,8 +10,10 @@ using Amazon.SQS.Model;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Notifications;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Certificates;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Ftps;
+using AssociationRegistry.KboMutations.MutationLambdaContainer.Logging;
 using AssociationRegistry.Notifications;
 using Microsoft.Extensions.Configuration;
 
@@ -127,37 +130,68 @@ public static class Function
             throw new ApplicationException("Could not load ParamNamesConfiguration");
         return paramNamesConfiguration;
     }
-    
-    private static async Task NotifyMetrics(INotifier notifier, IAmazonSQS amazonSqsClient, KboSyncConfiguration kboSyncConfiguration)
+
+    private static async Task NotifyMetrics(INotifier notifier, IAmazonSQS amazonSqsClient,
+        KboSyncConfiguration kboSyncConfiguration)
     {
-        await foreach (var attributeResonse in GetQueueAttributes(amazonSqsClient, kboSyncConfiguration))
+        await foreach (var attributeResponse in GetQueueAttributes(amazonSqsClient, kboSyncConfiguration))
+        {
             await notifier.Notify(new KboMutationLambdaQueueStatus(
-                attributeResonse.QueueARN,
+                attributeResponse.QueueARN,
                 0 +
-                attributeResonse.ApproximateNumberOfMessages +
-                attributeResonse.ApproximateNumberOfMessagesDelayed +
-                attributeResonse.ApproximateNumberOfMessagesNotVisible));
+                attributeResponse.ApproximateNumberOfMessages +
+                attributeResponse.ApproximateNumberOfMessagesDelayed +
+                attributeResponse.ApproximateNumberOfMessagesNotVisible));
+        }
     }
 
     private static async IAsyncEnumerable<GetQueueAttributesResponse> GetQueueAttributes(IAmazonSQS amazonSqsClient, KboSyncConfiguration kboSyncConfiguration)
     {
-        var attributeNames = new[]
+        var attributeNames = new List<string>
         {
-            nameof(GetQueueAttributesResponse.ApproximateNumberOfMessages),
-            nameof(GetQueueAttributesResponse.ApproximateNumberOfMessagesDelayed),
-            nameof(GetQueueAttributesResponse.ApproximateNumberOfMessagesNotVisible)
-        }.ToList();
-
-        var tasks = new[]
-        {
-            amazonSqsClient!.GetQueueAttributesAsync(kboSyncConfiguration!.MutationFileQueueUrl, attributeNames),
-            amazonSqsClient!.GetQueueAttributesAsync(kboSyncConfiguration!.MutationFileDeadLetterQueueUrl, attributeNames),
-            amazonSqsClient!.GetQueueAttributesAsync(kboSyncConfiguration!.SyncQueueUrl, attributeNames),
-            amazonSqsClient!.GetQueueAttributesAsync(kboSyncConfiguration!.SyncDeadLetterQueueUrl, attributeNames)
+            "QueueARN",
+            "ApproximateNumberOfMessages",
+            "ApproximateNumberOfMessagesDelayed",
+            "ApproximateNumberOfMessagesNotVisible"
         };
 
-        foreach (var task in tasks) yield return await task;
+        var queueUrls = new[]
+        {
+            kboSyncConfiguration.MutationFileQueueUrl,
+            kboSyncConfiguration.MutationFileDeadLetterQueueUrl,
+            kboSyncConfiguration.SyncQueueUrl,
+            kboSyncConfiguration.SyncDeadLetterQueueUrl
+        };
+
+        var tasks = new List<Task<GetQueueAttributesResponse>>();
+
+        foreach (var queueUrl in queueUrls)
+        {
+            tasks.Add(amazonSqsClient.GetQueueAttributesAsync(queueUrl, attributeNames));
+        }
+
+        foreach (var task in tasks)
+        {
+            GetQueueAttributesResponse result = null;
+            try
+            {
+                result = await task;
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception as needed
+                // Optionally, continue to the next task instead of halting the process
+                continue;
+            }
+        
+            if (result != null)
+            {
+                yield return result;
+            }
+        }
     }
+
+
 }
 
 [JsonSerializable(typeof(string))]

@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Text.Json;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
@@ -10,6 +11,7 @@ using AssocationRegistry.KboMutations.Messages;
 using AssocationRegistry.KboMutations.Models;
 using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.Kbo;
+using AssociationRegistry.KboMutations.MutationFileLambda.Logging;
 using AssociationRegistry.Notifications;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -42,7 +44,6 @@ public class MessageProcessor
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileQueueUrl)}:{_kboSyncConfiguration.MutationFileQueueUrl}");
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.SyncQueueUrl)}:{_kboSyncConfiguration.SyncQueueUrl}");
 
-        var batchResponse = new SendMessageBatchResponse();
         var encounteredExceptions = new List<Exception>();
 
         foreach (var record in sqsEvent.Records)
@@ -53,28 +54,28 @@ public class MessageProcessor
 
             try
             {
-                var response = await Handle(contextLogger, message, cancellationToken);
-                batchResponse.Successful.AddRange(response.Successful);
-                batchResponse.Failed.AddRange(response.Failed);
+                var responses = await Handle(contextLogger, message, cancellationToken);
+                await _notifier.Notify(new KboMutationFileLambdaSqsBerichtBatchVerstuurd(responses.Count(x => x.HttpStatusCode == HttpStatusCode.OK)));
+
+                var failedResponses = responses.Where(x => x.HttpStatusCode != HttpStatusCode.OK).ToArray();
+                if (failedResponses.Any())
+                    await _notifier.Notify(new KboMutationFileLambdaSqsBerichtBatchNietVerstuurd(failedResponses.Length));
+                
+                foreach (var batchResultErrorEntry in failedResponses)
+                    contextLogger.LogWarning($"KBO mutatie file lambda kon message '{batchResultErrorEntry.MessageId}' niet verzenden.'");
             }
             catch (Exception ex)
             {
                 await _notifier.Notify(new KboMutationFileLambdaMessageProcessorGefaald(ex));
                 encounteredExceptions.Add(ex);
-            };
+            }
         }
         
-        await _notifier.Notify(new KboMutationFileLambdaSqsBerichtBatchVerstuurd(batchResponse.Successful));
-        await _notifier.Notify(new KboMutationFileLambdaSqsBerichtBatchNietVerstuurd(batchResponse.Failed));
-
-        foreach (var batchResultErrorEntry in batchResponse.Failed)
-            contextLogger.LogWarning($"KBO mutatie file lambda kon message '{batchResultErrorEntry.Id}' niet verzenden: '{batchResultErrorEntry.Message}'");
-
         if (encounteredExceptions.Any())
             throw new AggregateException(encounteredExceptions);
     }
 
-    private async Task<SendMessageBatchResponse> Handle(ILambdaLogger contextLogger,
+    private async Task<List<SendMessageResponse>> Handle(ILambdaLogger contextLogger,
         TeVerwerkenMutatieBestandMessage? message,
         CancellationToken cancellationToken)
     {
@@ -91,7 +92,7 @@ public class MessageProcessor
 
         contextLogger.LogInformation($"Found {mutatielijnen.Count} mutatielijnen");
 
-        var messagesToSend = new List<SendMessageBatchRequestEntry>();
+        var responses = new List<SendMessageResponse>();
         foreach (var mutatielijn in mutatielijnen)
         {
             contextLogger.LogInformation($"Sending {mutatielijn.Ondernemingsnummer} to synchronize queue");
@@ -99,15 +100,13 @@ public class MessageProcessor
             var messageBody = JsonSerializer.Serialize(
                 new TeSynchroniserenKboNummerMessage(mutatielijn.Ondernemingsnummer));
 
-            messagesToSend.Add(new SendMessageBatchRequestEntry(
-                $"{mutatielijn.Ondernemingsnummer}-{mutatielijn.DatumModificatie.Ticks}", messageBody));
+            responses.Add(await _sqsClient.SendMessageAsync(_kboSyncConfiguration.SyncQueueUrl,messageBody,
+                cancellationToken));
         }
-
-        var response = await _sqsClient.SendMessageBatchAsync(_kboSyncConfiguration.SyncQueueUrl, messagesToSend, cancellationToken);
 
         await _s3Client.DeleteObjectAsync(_kboSyncConfiguration.MutationFileBucketName, message.Key, cancellationToken);
 
-        return response;
+        return responses;
     }
 
     private static async Task<string> FetchMutationFileContent(
@@ -126,7 +125,8 @@ public class MessageProcessor
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             HasHeaderRecord = true,
-            MissingFieldFound = null
+            MissingFieldFound = null,
+            Delimiter = ";",
         };
 
         using var stringReader = new StringReader(content);

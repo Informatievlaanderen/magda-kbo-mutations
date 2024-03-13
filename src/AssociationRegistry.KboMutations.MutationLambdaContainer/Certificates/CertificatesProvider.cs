@@ -1,9 +1,8 @@
-using System.Text;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 
-namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
+namespace AssociationRegistry.KboMutations.MutationLambdaContainer.Certificates;
 
 public class CertificatesProvider
 {

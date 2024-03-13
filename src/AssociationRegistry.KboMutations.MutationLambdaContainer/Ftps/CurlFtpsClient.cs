@@ -69,11 +69,11 @@ public class CurlFtpsClient : IFtpsClient
                                    $"--key {_kboMutationsConfiguration.KeyPath} --key-type {_kboMutationsConfiguration.KeyType} " +
                                    (!string.IsNullOrEmpty(_kboMutationsConfiguration.CaCertPath) ? $"--cacert {_kboMutationsConfiguration.CaCertPath} " : "") +
                                    $"{ftpSourceFilePath} " +
-                                   $"-o {localDestinationFilePath} --fail --silent --show-error",
+                                   $"-o {localDestinationFilePath} --fail -v --show-error",
                        RedirectStandardOutput = true,
                        RedirectStandardError = true,
                        UseShellExecute = false,
-                       CreateNoWindow = true
+                       CreateNoWindow = true,
                    }
                })
         {

@@ -1,7 +1,7 @@
 using System.Globalization;
 using Newtonsoft.Json;
 
-namespace AssociationRegistry.KboMutations.SyncLambda;
+namespace AssociationRegistry.KboMutations.SyncLambda.JsonSerialization;
 
 public class DateOnlyJsonConvertor : JsonConverter<DateOnly>
 {

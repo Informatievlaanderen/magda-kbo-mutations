@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace AssociationRegistry.KboMutations.SyncLambda;
+namespace AssociationRegistry.KboMutations.SyncLambda.JsonSerialization;
 
 public static class DateOnlyHelpers
 {

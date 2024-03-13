@@ -1,8 +1,7 @@
 ﻿using System.Text;
-using AssocationRegistry.KboMutations.Notifications;
 using AssociationRegistry.Notifications;
 
-namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
+namespace AssociationRegistry.KboMutations.MutationLambdaContainer.Logging;
 
 public readonly record struct KboMutationLambdaGestart : IMessage
 {
@@ -19,7 +18,7 @@ public readonly record struct KboMutationLambdaBestandenOpgehaald : IMessage
         _aantalBestanden = aantalBestanden;
     }
 
-    public string Value => $"KBO mutation lambda heeft {_aantalBestanden} bestanden opgehaald.";
+    public string Value => $"KBO mutation lambda heeft {_aantalBestanden} bestanden gevonden.";
     public NotifyType Type => NotifyType.None;
 }
 
@@ -58,7 +57,7 @@ public readonly record struct KboMutationLambdaQueueStatus : IMessage
         {
             var sb = new StringBuilder();
             sb.AppendLine($"KBO mutation file queue statistieken:");
-            sb.AppendLine($"- Queue : {_queueArn[(_queueArn.LastIndexOf(':') + 1)..]}");
+            sb.AppendLine($"- Queue : {_queueArn}");
             sb.AppendLine($"- Aantal berichten : {(_approximateMessageCount.Equals(0) ? "Geen" : _approximateMessageCount)} resterende berichten.");
             return sb.ToString();
         }

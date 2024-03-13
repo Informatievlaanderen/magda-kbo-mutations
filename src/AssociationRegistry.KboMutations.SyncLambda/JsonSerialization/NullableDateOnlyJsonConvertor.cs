@@ -3,9 +3,9 @@ using System.Runtime.Serialization;
 using Be.Vlaanderen.Basisregisters.AggregateSource;
 using Newtonsoft.Json;
 
-namespace AssociationRegistry.KboMutations.SyncLambda;
+namespace AssociationRegistry.KboMutations.SyncLambda.JsonSerialization;
 
-public class NullableDateOnlyJsonConvertor : Newtonsoft.Json.JsonConverter<DateOnly?>
+public class NullableDateOnlyJsonConvertor : JsonConverter<DateOnly?>
 {
     private readonly string _format;
 

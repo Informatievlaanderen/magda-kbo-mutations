@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using AssociationRegistry.KboMutations.MutationLambdaContainer.Configuration;
 
-namespace AssociationRegistry.KboMutations.MutationLambdaContainer;
+namespace AssociationRegistry.KboMutations.MutationLambdaContainer.Logging;
 
 public class ProgramInformation
 {
