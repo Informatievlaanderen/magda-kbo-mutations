@@ -1,4 +1,5 @@
 ﻿using Amazon.Lambda.Core;
+using Amazon.Lambda.TestUtilities;
 using Amazon.S3;
 using Amazon.SQS;
 using AssocationRegistry.KboMutations;
@@ -34,7 +35,7 @@ public abstract class WithMutationFileToProcessFixture : WithLocalstackFixture
             ConfigureSqsClient(),
             KboMutationsConfiguration,
             KboSyncConfiguration, 
-            new NullNotifier());
+            new NullNotifier(new TestLambdaLogger()));
         return Task.CompletedTask;
     }
 

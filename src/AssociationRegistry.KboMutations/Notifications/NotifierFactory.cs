@@ -25,13 +25,15 @@ public class NotifierFactory
         {
             _logger.LogWarning($"ParamName '{nameof(_paramNames.SlackWebhook)}' was not provided, slack notifications will not be enabled");
 
-            return new NullNotifier();
+            return new NullNotifier(_logger);
         }
-
+        
         var webhook = await _ssmClientWrapper.GetParameterAsync(_paramNames.SlackWebhook);
         
         LogIfNotFound(webhook, _paramNames.SlackWebhook);
 
+        _logger.LogInformation("Slack notifications are enabled");
+        
         return new SlackNotifier(_logger, webhook);
     }
     
@@ -41,9 +43,10 @@ public class NotifierFactory
         {
             return await Create();
         }
-        catch
+        catch(Exception ex)
         {
-            return new NullNotifier();
+            _logger.LogError($"Could not create notifier: {ex.Message}");
+            return new NullNotifier(_logger);
         }
     }
 

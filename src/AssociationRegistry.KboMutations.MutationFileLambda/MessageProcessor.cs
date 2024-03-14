@@ -124,7 +124,7 @@ public class MessageProcessor
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            HasHeaderRecord = true,
+            HasHeaderRecord = false,
             MissingFieldFound = null,
             Delimiter = ";",
         };

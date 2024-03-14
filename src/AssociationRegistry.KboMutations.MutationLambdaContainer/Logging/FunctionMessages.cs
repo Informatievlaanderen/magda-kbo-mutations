@@ -40,29 +40,21 @@ public readonly record struct KboMutationLambdaVoltooid : IMessage
     public NotifyType Type => NotifyType.Success;
 }
 
+
 public readonly record struct KboMutationLambdaQueueStatus : IMessage
 {
-    private readonly string _queueArn;
+    private readonly string _queueOmschrijving;
     private readonly int _approximateMessageCount;
 
-    public KboMutationLambdaQueueStatus(string queueArn, int approximateMessageCount)
+    public KboMutationLambdaQueueStatus(string queueOmschrijving, int approximateMessageCount)
     {
-        _queueArn = queueArn;
+        _queueOmschrijving = queueOmschrijving;
         _approximateMessageCount = approximateMessageCount;
     }
 
     public string Value
-    {
-        get
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine($"KBO mutation file queue statistieken:");
-            sb.AppendLine($"- Queue : {_queueArn}");
-            sb.AppendLine($"- Aantal berichten : {(_approximateMessageCount.Equals(0) ? "Geen" : _approximateMessageCount)} resterende berichten.");
-            return sb.ToString();
-        }
-    }
-
+        => $"{_queueOmschrijving}: {_approximateMessageCount}";
+    
     public NotifyType Type => _approximateMessageCount > 0 
         ? NotifyType.Failure 
         : NotifyType.Success;

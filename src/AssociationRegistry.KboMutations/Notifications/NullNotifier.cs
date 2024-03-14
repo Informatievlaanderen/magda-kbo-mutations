@@ -1,8 +1,16 @@
+using Amazon.Lambda.Core;
 using AssociationRegistry.Notifications;
 
 namespace AssocationRegistry.KboMutations.Notifications;
 
 public class NullNotifier : INotifier
 {
-    public Task Notify(IMessage message) => Task.CompletedTask;
+    private readonly ILambdaLogger _logger;
+
+    public NullNotifier(ILambdaLogger logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task Notify(IMessage message) => _logger.LogInformation($"Not notifying slack: {message.Value}");
 }

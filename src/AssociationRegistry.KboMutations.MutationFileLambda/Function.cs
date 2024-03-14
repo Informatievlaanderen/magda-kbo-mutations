@@ -47,14 +47,17 @@ public class Function
         var amazonKboSyncConfiguration = GetKboSyncConfiguration(configurationRoot);
         var ssmClientWrapper = new SsmClientWrapper(new AmazonSimpleSystemsManagementClient());
         var paramNamesConfiguration = GetParamNamesConfiguration(configurationRoot);
-        var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger).TryCreate();
+        var notifier = await new NotifierFactory(
+            ssmClientWrapper, 
+            paramNamesConfiguration, 
+            context.Logger).TryCreate();
         var s3Client = new AmazonS3Client();
         var sqsClient = new AmazonSQSClient();
 
         _processor = new MessageProcessor(s3Client, sqsClient, notifier, amazonKboSyncConfiguration);
 
         context.Logger.LogInformation($"KBO mutation file lambda gestart. Aantal berichten te verwerken: {@event.Records.Count}");
-        await _processor!.ProcessMessage(@event, context.Logger, CancellationToken.None);
+        await _processor.ProcessMessage(@event, context.Logger, CancellationToken.None);
         context.Logger.LogInformation($"KBO mutation file lambda voltooid.");
     }
 

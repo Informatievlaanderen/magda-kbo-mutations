@@ -134,64 +134,42 @@ public static class Function
     private static async Task NotifyMetrics(INotifier notifier, IAmazonSQS amazonSqsClient,
         KboSyncConfiguration kboSyncConfiguration)
     {
-        await foreach (var attributeResponse in GetQueueAttributes(amazonSqsClient, kboSyncConfiguration))
-        {
-            await notifier.Notify(new KboMutationLambdaQueueStatus(
-                attributeResponse.QueueARN,
-                0 +
-                attributeResponse.ApproximateNumberOfMessages +
-                attributeResponse.ApproximateNumberOfMessagesDelayed +
-                attributeResponse.ApproximateNumberOfMessagesNotVisible));
-        }
-    }
-
-    private static async IAsyncEnumerable<GetQueueAttributesResponse> GetQueueAttributes(IAmazonSQS amazonSqsClient, KboSyncConfiguration kboSyncConfiguration)
-    {
         var attributeNames = new List<string>
         {
-            "QueueARN",
+            "QueueArn", // Note: Ensure correct spelling of attribute names as AWS expects them
             "ApproximateNumberOfMessages",
             "ApproximateNumberOfMessagesDelayed",
             "ApproximateNumberOfMessagesNotVisible"
         };
 
-        var queueUrls = new[]
+        var queueUrls = new Dictionary<string, string>()
         {
-            kboSyncConfiguration.MutationFileQueueUrl,
-            kboSyncConfiguration.MutationFileDeadLetterQueueUrl,
-            kboSyncConfiguration.SyncQueueUrl,
-            kboSyncConfiguration.SyncDeadLetterQueueUrl
+            {kboSyncConfiguration.MutationFileQueueUrl, "Aantal bestanden nog te verwerken"},
+            {kboSyncConfiguration.MutationFileDeadLetterQueueUrl, "Aantal bestanden die niet konden verwerkt worden"},
+            {kboSyncConfiguration.SyncQueueUrl, "Aantal verenigingen nog te synchroniseren"},
+            {kboSyncConfiguration.SyncDeadLetterQueueUrl, "Aantal verenigingen die niet konden gesynchroniseerd worden"},
         };
 
-        var tasks = new List<Task<GetQueueAttributesResponse>>();
-
-        foreach (var queueUrl in queueUrls)
+        foreach (var queue in queueUrls)
         {
-            tasks.Add(amazonSqsClient.GetQueueAttributesAsync(queueUrl, attributeNames));
-        }
+            var queueAttributesResponse = 
+                await amazonSqsClient.GetQueueAttributesAsync(queue.Key, attributeNames);
+    
+            var queueAttributes = queueAttributesResponse.Attributes;
 
-        foreach (var task in tasks)
-        {
-            GetQueueAttributesResponse result = null;
-            try
-            {
-                result = await task;
-            }
-            catch (Exception ex)
-            {
-                // Handle or log the exception as needed
-                // Optionally, continue to the next task instead of halting the process
-                continue;
-            }
-        
-            if (result != null)
-            {
-                yield return result;
-            }
+            // Parsing string values to integers as necessary
+            int.TryParse(queueAttributes["ApproximateNumberOfMessages"], out int numberOfMessages);
+            int.TryParse(queueAttributes["ApproximateNumberOfMessagesDelayed"], out int numberOfMessagesDelayed);
+            int.TryParse(queueAttributes["ApproximateNumberOfMessagesNotVisible"], out int numberOfMessagesNotVisible);
+    
+            // Assuming you want to construct your status object with these values
+            await notifier.Notify(new KboMutationLambdaQueueStatus(
+                queue.Value, // Correct key to access the ARN
+                numberOfMessages +
+                numberOfMessagesDelayed +
+                numberOfMessagesNotVisible));
         }
     }
-
-
 }
 
 [JsonSerializable(typeof(string))]

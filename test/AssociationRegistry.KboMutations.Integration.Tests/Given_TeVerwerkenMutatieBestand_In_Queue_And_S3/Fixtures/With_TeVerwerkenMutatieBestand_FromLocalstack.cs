@@ -86,7 +86,7 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
         var mutatieBestandProcessor = new MutatieBestandProcessor(logger, SecureFtpClient, AmazonS3Client,
             AmazonSqsClient, kboMutationsConfiguration,
             KboSyncConfiguration, 
-            new NullNotifier());
+            new NullNotifier(new TestLambdaLogger()));
 
         await mutatieBestandProcessor.ProcessAsync();
     }
