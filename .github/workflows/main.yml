@@ -68,7 +68,7 @@ jobs:
     secrets: inherit
 
   build-mutationfile-lambda:
-    name: Build MutationFile Lambda
+    name: Build Mutation File Lambda
     uses: ./.github/workflows/build-lambda.yml
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
@@ -81,7 +81,7 @@ jobs:
     secrets: inherit
 
   build-sync-lambda:
-    name: Build Mutation Lambda
+    name: Build Sync Lambda
     uses: ./.github/workflows/build-lambda.yml
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
