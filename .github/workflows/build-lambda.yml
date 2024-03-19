@@ -72,37 +72,14 @@ jobs:
         if: ${{ inputs.test-project != '' && inputs.test-project != 'none' }}
         run: dotnet test test/${{ inputs.test-project }}
 
-      - name: Dotnet restore
-        shell: bash
-        run: dotnet restore src/${{ inputs.build-project }} --runtime $RUNTIME
-        env:
-          RUNTIME: ${{ inputs.runtime || 'linux-x64' }}
-
-      - name: Dotnet build
-        shell: bash
-        run: dotnet build --no-restore --runtime $RUNTIME --self-contained src/${{ inputs.build-project }}
-        env:
-          RUNTIME: ${{ inputs.runtime || 'linux-x64' }}
-
-      - name: Dotnet publish
-        shell: bash
-        run: dotnet publish -o dist/${{ inputs.build-project }}/linux --no-build --no-restore --runtime $RUNTIME -p:PublishReadyToRun=true --self-contained src/${{ inputs.build-project }}
-        env:
-          RUNTIME: ${{ inputs.runtime || 'linux-x64' }}
-
-      - name: Package Lambda functions
-        if: env.RELEASE_VERSION != 'none'
-        shell: bash
-        run: |
-          echo Zip lambda functions
-          pushd dist/${{ inputs.build-project }}/linux
-          echo zip -r lambda.zip .
-          zip -r lambda.zip .
-          popd
-
-      - name: Upload Lambda
+      - name: Package lambda
         if: inputs.semver != 'none'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.lambda-name }}-${{ inputs.semver }}
-          path: dist/${{ inputs.build-project }}/linux/lambda.zip
+        shell: bash
+        run: cd src/${{ inputs.build-project }} && dotnet lambda package        
+
+#      - name: Upload Lambda
+#        if: inputs.semver != 'none'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: ${{ inputs.lambda-name }}-${{ inputs.semver }}
+#          path: dist/${{ inputs.build-project }}/linux/lambda.zip
