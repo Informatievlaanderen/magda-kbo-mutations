@@ -77,9 +77,9 @@ jobs:
         shell: bash
         run: cd src/${{ inputs.build-project }} && dotnet lambda package --region eu-west-1        
 
-#      - name: Upload Lambda
-#        if: inputs.semver != 'none'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: ${{ inputs.lambda-name }}-${{ inputs.semver }}
-#          path: dist/${{ inputs.build-project }}/linux/lambda.zip
+      - name: Upload Lambda
+        if: inputs.semver != 'none'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.lambda-name }}-${{ inputs.semver }}
+          path: src/${{ inputs.build-project }}/bin/Release/net7.0/${{ inputs.build-project }}.zip
