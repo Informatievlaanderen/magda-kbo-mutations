@@ -75,7 +75,7 @@ jobs:
       - name: Package lambda
         if: inputs.semver != 'none'
         shell: bash
-        run: cd src/${{ inputs.build-project }} && dotnet lambda package        
+        run: cd src/${{ inputs.build-project }} && dotnet lambda package --region eu-west-1        
 
 #      - name: Upload Lambda
 #        if: inputs.semver != 'none'
