@@ -8,12 +8,12 @@ on:
 concurrency: CI
 jobs:
 
-#  analyze-code:
-#    name: Analyze Code
-#    uses: informatievlaanderen/build-pipeline/.github/workflows/analyze-code.yml@main
-#    with:
-#      registry: association-registry-kbomutations
-#    secrets: inherit
+  analyze-code:
+    name: Analyze Code
+    uses: informatievlaanderen/build-pipeline/.github/workflows/analyze-code.yml@main
+    with:
+      registry: association-registry-kbomutations
+    secrets: inherit
 
   set-release-version:
     if: github.repository_owner == 'Informatievlaanderen'
