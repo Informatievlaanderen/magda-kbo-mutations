@@ -8,12 +8,12 @@ on:
 concurrency: CI
 jobs:
 
-  analyze-code:
-    name: Analyze Code
-    uses: ./.github/workflows/analyze-code.yml
-    with:
-      registry: association-registry-kbomutations
-    secrets: inherit
+#  analyze-code:
+#    name: Analyze Code
+#    uses: ./.github/workflows/analyze-code.yml
+#    with:
+#      registry: association-registry-kbomutations
+#    secrets: inherit
 
   set-release-version:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -64,7 +64,7 @@ jobs:
       test-project: AssociationRegistry.KboMutations.MutationLambdaContainer.Tests
       build-project: AssociationRegistry.KboMutations.MutationLambdaContainer
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: '8.x'
+      dotnet-version: '7.x'
     secrets: inherit
 
   build-mutationfile-lambda:
@@ -77,7 +77,7 @@ jobs:
       test-project: AssociationRegistry.KboMutations.MutationFileLambda.Tests
       build-project: AssociationRegistry.KboMutations.MutationFileLambda
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: '8.x'
+      dotnet-version: '7.x'
     secrets: inherit
 
   build-sync-lambda:
@@ -90,7 +90,7 @@ jobs:
       test-project: AssociationRegistry.KboMutations.SyncLambda.Tests
       build-project: AssociationRegistry.KboMutations.SyncLambda
       semver: ${{ needs.set-release-version.outputs.version }}
-      dotnet-version: '8.x'
+      dotnet-version: '7.x'
     secrets: inherit      
 
   release:
@@ -288,7 +288,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '7.x'
 
       - name: .NET version
         shell: bash

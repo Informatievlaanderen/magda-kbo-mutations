@@ -77,7 +77,7 @@ jobs:
         shell: bash
         run: cd src/${{ inputs.build-project }} && dotnet lambda package --region eu-west-1        
 
-      - name: Upload Lambda
+      - name: Upload Lambda as Artifact
         if: inputs.semver != 'none'
         uses: actions/upload-artifact@v4
         with:
