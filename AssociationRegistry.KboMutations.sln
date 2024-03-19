@@ -21,6 +21,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9782E370-0162-43D1-B446-49564347E856}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\main.yml = .github\workflows\main.yml
+		.github\workflows\analyze-code.yml = .github\workflows\analyze-code.yml
+		.github\workflows\build-lambda.yml = .github\workflows\build-lambda.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}"
@@ -87,6 +89,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer", "src\AssociationRegistry.KboMutations.MutationLambdaContainer\AssociationRegistry.KboMutations.MutationLambdaContainer.csproj", "{13DA2E01-E14C-44A3-A054-6EF78350137F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer.Tests", "test\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests.csproj", "{B5B2747A-1205-454A-B8AD-F09843ECA906}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{2143DC93-6D39-43F9-9205-118135986B5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -156,5 +160,6 @@ Global
 		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 		{13DA2E01-E14C-44A3-A054-6EF78350137F} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{B5B2747A-1205-454A-B8AD-F09843ECA906} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
+		{2143DC93-6D39-43F9-9205-118135986B5A} = {26FCD4EA-8B49-4F8E-8E68-C63576940F0C}
 	EndGlobalSection
 EndGlobal

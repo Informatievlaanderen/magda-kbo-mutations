@@ -10,7 +10,7 @@ jobs:
 
   analyze-code:
     name: Analyze Code
-    uses: informatievlaanderen/build-pipeline/.github/workflows/analyze-code.yml@main
+    uses: ./.github/workflows/analyze-code.yml
     with:
       registry: association-registry-kbomutations
     secrets: inherit
@@ -56,19 +56,20 @@ jobs:
 
   build-mutation-lambda:
     name: Build Mutation Lambda
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
+    uses: ./.github/workflows/build-lambda.yml
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
       lambda-name: lambda-mutation
-      test-project: AssociationRegistry.KboMutations.MutationLambda.Tests
-      build-project: AssociationRegistry.KboMutations.MutationLambda
+      test-project: AssociationRegistry.KboMutations.MutationLambdaContainer.Tests
+      build-project: AssociationRegistry.KboMutations.MutationLambdaContainer
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: '8.x'
     secrets: inherit
 
   build-mutationfile-lambda:
     name: Build MutationFile Lambda
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
+    uses: ./.github/workflows/build-lambda.yml
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -76,11 +77,12 @@ jobs:
       test-project: AssociationRegistry.KboMutations.MutationFileLambda.Tests
       build-project: AssociationRegistry.KboMutations.MutationFileLambda
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: '8.x'
     secrets: inherit
 
   build-sync-lambda:
     name: Build Mutation Lambda
-    uses: Informatievlaanderen/build-pipeline/.github/workflows/build-lambda.yml@main
+    uses: ./.github/workflows/build-lambda.yml
     needs: [ set-release-version ]
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.set-release-version.outputs.version != 'none') }}
     with:
@@ -88,6 +90,7 @@ jobs:
       test-project: AssociationRegistry.KboMutations.SyncLambda.Tests
       build-project: AssociationRegistry.KboMutations.SyncLambda
       semver: ${{ needs.set-release-version.outputs.version }}
+      dotnet-version: '8.x'
     secrets: inherit      
 
   release:
