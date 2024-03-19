@@ -8,12 +8,12 @@ on:
 concurrency: CI
 jobs:
 
-  analyze-code:
-    name: Analyze Code
-    uses: informatievlaanderen/build-pipeline/.github/workflows/analyze-code.yml@main
-    with:
-      registry: association-registry-kbomutations
-    secrets: inherit
+#  analyze-code:
+#    name: Analyze Code
+#    uses: informatievlaanderen/build-pipeline/.github/workflows/analyze-code.yml@main
+#    with:
+#      registry: association-registry-kbomutations
+#    secrets: inherit
 
   set-release-version:
     if: github.repository_owner == 'Informatievlaanderen'
@@ -27,6 +27,9 @@ jobs:
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm ci
 
       - name: Run Semantic Release dry-run
         shell: bash
