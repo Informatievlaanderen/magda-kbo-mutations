@@ -6,7 +6,7 @@
   "license": "EUPL-1.2",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/informatievlaanderen/association-registry.git"
+    "url": "git+ssh://git@github.com/informatievlaanderen/association-registry-kbo-mutations.git"
   },
   "devDependencies": {
     "@commitlint/cli": "17.8.1",
