@@ -13,6 +13,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Generate Token
+        id: generate_token   # Add an ID to this step for reference
+        run: node .github/build-scripts/generate-token.js
+        env:
+          APP_ID: ${{ secrets.MYBOT_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.MYBOT_PRIVATE_KEY }}
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate_token.outputs.installationToken  }}
 
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -35,7 +46,7 @@ jobs:
       - name: .NET version
         shell: bash
         run: dotnet --info
-
+          
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -66,11 +77,11 @@ jobs:
 
       - name: Start sonar scanner
         env:
-          GITHUB_TOKEN: ${{ secrets.VBR_ACTIONS_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.installationToken  }}
+          SONAR_TOKEN: ${{ secrets.VBR_SONAR_TOKEN }}
         shell: bash
         run: |
-          ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_association-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+          ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_association-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.VBR_SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
 
       - name: Dotnet restore
         shell: bash
@@ -83,10 +94,10 @@ jobs:
       - name: Analyze with sonar scanner
         env:
           GITHUB_TOKEN: ${{ secrets.VBR_ACTIONS_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.VBR_SONAR_TOKEN }}
         shell: bash
         run: |
-          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.VBR_SONAR_TOKEN }}"
 
 
 
@@ -194,7 +205,7 @@ jobs:
     - name: Package lambda
       if: inputs.semver != 'none'
       shell: bash
-      run: cd src/AssociationRegistry.KboMutations.MutationFileLambda && dotnet lambda package --region ${{ secrets.AWS_REGION }}
+      run: cd src/AssociationRegistry.KboMutations.MutationFileLambda && dotnet lambda package --region ${{ secrets.VBR_AWS_REGION }}
 
     - name: Upload Lambda as Artifact
       if: inputs.semver != 'none'
@@ -255,7 +266,7 @@ jobs:
       - name: Package lambda
         if: inputs.semver != 'none'
         shell: bash
-        run: cd src/AssociationRegistry.KboMutations.SyncLambda && dotnet lambda package --region ${{ secrets.AWS_REGION }}
+        run: cd src/AssociationRegistry.KboMutations.SyncLambda && dotnet lambda package --region ${{ secrets.VBR_AWS_REGION }}
 
       - name: Upload Lambda as Artifact
         if: inputs.semver != 'none'
@@ -348,7 +359,7 @@ jobs:
 #      with:
 #        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
 #        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#        aws-region: ${{ secrets.AWS_REGION }}
+#        aws-region: ${{ secrets.VBR_AWS_REGION }}
 #
 #    - name: Login to Amazon ECR
 #      uses: aws-actions/amazon-ecr-login@v2
@@ -374,11 +385,11 @@ jobs:
           path: ~/mutationfile/
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.VBR_AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -408,7 +419,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.VBR_AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
@@ -503,7 +514,7 @@ jobs:
 #        with:
 #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
 #          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: ${{ secrets.AWS_REGION_PRD }}
+#          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 #
 #      - name: Prepare Lambda
 #        shell: bash
@@ -520,7 +531,7 @@ jobs:
 #        env:
 #          ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
 #          SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          REGION: ${{ secrets.AWS_REGION_PRD }}
+#          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
 #          PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
 
   deploy-mutation-file-lambda-test:
@@ -535,7 +546,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION_PRD }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Prepare Lambda
         shell: bash
@@ -552,7 +563,7 @@ jobs:
         env:
           ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REGION: ${{ secrets.AWS_REGION_PRD }}
+          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
           PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
 
   deploy-sync-lambda-test:
@@ -567,7 +578,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION_PRD }}
+          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
 
       - name: Prepare Lambda
         shell: bash
@@ -584,5 +595,5 @@ jobs:
         env:
           ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REGION: ${{ secrets.AWS_REGION_PRD }}
+          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
           PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}

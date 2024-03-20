@@ -88,7 +88,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMuta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssociationRegistry.KboMutations.MutationLambdaContainer.Tests", "test\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests\AssociationRegistry.KboMutations.MutationLambdaContainer.Tests.csproj", "{B5B2747A-1205-454A-B8AD-F09843ECA906}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "actions", "actions", "{2143DC93-6D39-43F9-9205-118135986B5A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build-scripts", "build-scripts", "{D7FB7535-81C1-418F-9A09-31DC57019642}"
+	ProjectSection(SolutionItems) = preProject
+		.github\build-scripts\build-docker.sh = .github\build-scripts\build-docker.sh
+		.github\build-scripts\generate-token.js = .github\build-scripts\generate-token.js
+		.github\build-scripts\publish.sh = .github\build-scripts\publish.sh
+		.github\build-scripts\run-tests-docker.sh = .github\build-scripts\run-tests-docker.sh
+		.github\build-scripts\SetSolutionInfo.csx = .github\build-scripts\SetSolutionInfo.csx
+		.github\build-scripts\set-solution-info.sh = .github\build-scripts\set-solution-info.sh
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +166,6 @@ Global
 		{E93C92CA-1BC4-4BAD-89EE-0ADEA09046A9} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
 		{13DA2E01-E14C-44A3-A054-6EF78350137F} = {46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}
 		{B5B2747A-1205-454A-B8AD-F09843ECA906} = {4233CA41-24DE-4196-8A13-D4AF5B2B330A}
-		{2143DC93-6D39-43F9-9205-118135986B5A} = {26FCD4EA-8B49-4F8E-8E68-C63576940F0C}
+		{D7FB7535-81C1-418F-9A09-31DC57019642} = {26FCD4EA-8B49-4F8E-8E68-C63576940F0C}
 	EndGlobalSection
 EndGlobal
