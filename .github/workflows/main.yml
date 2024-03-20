@@ -425,10 +425,11 @@ jobs:
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: Push Lambda functions to S3
+    - name: Push Lambda functions to ECR
       shell: bash
       run: |
-        aws s3 cp ~/mutation/lambda.zip s3://460116816372-lambda-mutation/$SEMVER/lambda.zip
+        docker tag associationregistry.kbomutations.mutationlambdacontainer:latest 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:${{ needs.release.outputs.version }}
+        docker push 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:${{ needs.release.outputs.version }}
       env:
         SEMVER: ${{ needs.release.outputs.version }}
 
