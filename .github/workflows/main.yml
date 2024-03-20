@@ -359,7 +359,6 @@ jobs:
 #        aws s3 cp ~/mutation/lambda.zip s3://460116816372-lambda-mutation/$SEMVER/lambda.zip
 #      env:
 #        SEMVER: ${{ needs.release.outputs.version }}
-#      
 
   upload-mutationfile-lambda:
     name: Upload MutationFile Lambda
