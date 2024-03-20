@@ -1,3 +1,14 @@
+## [1.0.2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.1...v1.0.2) (2024-03-20)
+
+
+### Bug Fixes
+
+* update main workflow ([34cc99b](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/34cc99b920b17f8ee7994a7b2167d76a990d7442))
+* update main workflow ([ebd337f](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/ebd337f228cb5d1e89ead4f96c1f98b34703f4f1))
+* update main workflow ([0372c76](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/0372c76edc935f49f9c271f275a3c23a099c22f9))
+* update main workflow ([01a801d](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/01a801d05d3aa1c256fac395b8167630811c6d55))
+* update main workflow ([00d52ce](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/00d52ce1182479ba6d774be009238a012910619a))
+
 ## [1.0.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.0...v1.0.1) (2024-03-20)
 
 
