@@ -261,7 +261,7 @@ jobs:
         if: inputs.semver != 'none'
         uses: actions/upload-artifact@v4
         with:
-          name: lambda-mutationfile-${{ needs.set-release-version.outputs.version }}
+          name: lambda-sync-${{ needs.set-release-version.outputs.version }}
           path: src/AssociationRegistry.KboMutations.SyncLambda/bin/Release/net7.0/AssociationRegistry.KboMutations.SyncLambda.zip
 
   release:
