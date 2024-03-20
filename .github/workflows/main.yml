@@ -395,7 +395,7 @@ jobs:
         continue-on-error: false
         with:
           name: lambda-mutationfile-${{ needs.release.outputs.version }}
-          path: ~/mutationfile/
+          path: .
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -404,15 +404,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.VBR_AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Push Lambda functions to S3
+      - name: Update Function Code
         shell: bash
         run: |
-          aws s3 cp ~/mutationfile/AssociationRegistry.KboMutations.MutationFileLambda.zip s3://460116816372-lambda-mutationfile/$SEMVER/lambda.zip
-        env:
-          SEMVER: ${{ needs.release.outputs.version }}
+          aws lambda update-function-code --function-name kbo-sync --zip-file fileb://AssociationRegistry.KboMutations.MutationFileLambda.zip
   
   upload-sync-lambda:
     name: Upload Sync Lambda
@@ -425,7 +420,7 @@ jobs:
         continue-on-error: false
         with:
           name: lambda-sync-${{ needs.release.outputs.version }}
-          path: ~/mutation/
+          path: .
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -434,15 +429,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.VBR_AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Push Lambda functions to S3
+      - name: Update Function Code
         shell: bash
         run: |
-          aws s3 cp ~/sync/AssociationRegistry.KboMutations.SyncLambda.zip s3://460116816372-lambda-sync/$SEMVER/lambda.zip
-        env:
-          SEMVER: ${{ needs.release.outputs.version }}
+          aws lambda update-function-code --function-name kbo-sync --zip-file fileb://AssociationRegistry.KboMutations.SyncLambda.zip
 
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
