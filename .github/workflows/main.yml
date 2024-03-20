@@ -269,7 +269,7 @@ jobs:
     name: Semantic Release
     runs-on: ubuntu-latest
     needs: 
-      - build-mutation-lambda
+#      - build-mutation-lambda
       - build-mutationfile-lambda
       - build-sync-lambda
     outputs:
@@ -423,7 +423,7 @@ jobs:
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
     needs: 
-      - upload-mutation-lambda
+#      - upload-mutation-lambda
       - upload-mutationfile-lambda
       - upload-sync-lambda
     name: Publish to Atlassian
