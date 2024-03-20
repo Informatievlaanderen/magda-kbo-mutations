@@ -21,8 +21,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9782E370-0162-43D1-B446-49564347E856}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\main.yml = .github\workflows\main.yml
-		.github\workflows\analyze-code.yml = .github\workflows\analyze-code.yml
-		.github\workflows\build-lambda.yml = .github\workflows\build-lambda.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}"
