@@ -408,12 +408,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
     steps:
-    - name: Download Lambda
-      uses: actions/download-artifact@v4
-      continue-on-error: false
-      with:
-        name: lambda-mutation-${{ needs.release.outputs.version }}
-        path: ~/mutationfile/
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
