@@ -187,6 +187,7 @@ jobs:
         run: |
           dotnet tool restore
 
+
       - name: Dotnet restore tests
         shell: bash
         run: dotnet restore test/AssociationRegistry.KboMutations.MutationLambdaContainer.Tests --runtime $RUNTIME
@@ -207,23 +208,17 @@ jobs:
         shell: bash
         run: cd src/AssociationRegistry.KboMutations.MutationLambdaContainer && dotnet lambda package --region ${{ secrets.VBR_AWS_REGION }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.VBR_AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Push Lambda functions to ECR
+      - name: Save Image
+        if: inputs.semver != 'none'
         shell: bash
-        run: |
-          docker tag associationregistry.kbomutations.mutationlambdacontainer:latest 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:$SEMVER
-          docker push 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:$SEMVER
-        env:
-          SEMVER: ${{ needs.set-release-version.outputs.version }}
+        run: docker image save associationregistry.kbomutations.mutationlambdacontainer:latest -o ~/AssociationRegistry.KboMutations.MutationLambdaContainer.tar
+
+      - name: Upload Lambda as Artifact
+        if: inputs.semver != 'none'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-mutation-${{ needs.set-release-version.outputs.version }}
+          path: ~/AssociationRegistry.KboMutations.MutationLambdaContainer.tar
 
   build-mutationfile-lambda:
     name: Build Mutation File Lambda
@@ -412,6 +407,42 @@ jobs:
           echo ::set-output name=version::$(cat semver)
           echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
         shell: bash
+
+  upload-mutation-lambda:
+    name: Upload MutationFile Lambda
+    needs: [ release ]
+    runs-on: ubuntu-latest
+    if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
+    steps:
+      - name: Download Lambda
+        uses: actions/download-artifact@v4
+        continue-on-error: false
+        with:
+          name: lambda-mutation-${{ needs.release.outputs.version }}
+          path: .
+
+      - name: Load artifact
+        shell: bash
+        run: |
+          docker image load -i ~/AssociationRegistry.KboMutations.MutationLambdaContainer.tar
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.VBR_AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push Lambda function to ECR
+        shell: bash
+        run: |
+          docker tag associationregistry.kbomutations.mutationlambdacontainer:latest 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:$SEMVER
+          docker push 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:$SEMVER
+        env:
+          SEMVER: ${{ needs.set-release-version.outputs.version }}
 
   upload-mutationfile-lambda:
     name: Upload MutationFile Lambda
