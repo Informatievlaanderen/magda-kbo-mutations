@@ -1,3 +1,10 @@
+## [1.0.12](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.11...v1.0.12) (2024-03-21)
+
+
+### Bug Fixes
+
+* update main workflow ([d53489f](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/d53489f660250cf4114ed3d1ccc8d84ac935c8b3))
+
 ## [1.0.11](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.10...v1.0.11) (2024-03-21)
 
 
