@@ -467,10 +467,10 @@ jobs:
       - name: Upload Lambda function
         shell: bash
         run: |
-          aws s3 cp ~/AssociationRegistry.KboMutations.MutationFileLambda.zip $S3_BASEURL/$VERSION/lambda.zip --copy-props none
+          aws s3 cp ~/AssociationRegistry.KboMutations.MutationFileLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_BASEURL: 's3://460116816372-kbo-mutations-file-test'
+          S3_BASEURL: '460116816372-lambda-mutationfile'
           
   upload-sync-lambda:
     name: Upload Sync Lambda
@@ -495,10 +495,10 @@ jobs:
       - name: Upload Lambda function
         shell: bash
         run: |
-          aws s3 cp ~/AssociationRegistry.KboMutations.SyncLambda.zip $S3_BASEURL/$VERSION/lambda.zip --copy-props none
+          aws s3 cp ~/AssociationRegistry.KboMutations.SyncLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_BASEURL: 's3://460116816372-kbo-sync-test'
+          S3_BASEURL: '460116816372-lambda-sync'
 
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
