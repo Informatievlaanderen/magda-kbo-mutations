@@ -220,10 +220,10 @@ jobs:
       - name: Push Lambda functions to ECR
         shell: bash
         run: |
-          docker tag associationregistry.kbomutations.mutationlambdacontainer:latest 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:${{ needs.release.outputs.version }}
-          docker push 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:${{ needs.release.outputs.version }}
+          docker tag associationregistry.kbomutations.mutationlambdacontainer:latest 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:$SEMVER
+          docker push 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-kbomutations:$SEMVER
         env:
-          SEMVER: ${{ needs.release.outputs.version }}
+          SEMVER: ${{ needs.set-release-version.outputs.version }}
 
   build-mutationfile-lambda:
     name: Build Mutation File Lambda
