@@ -56,7 +56,7 @@ public class Function
             .GetSection(ParamNamesConfiguration.Section)
             .Get<ParamNamesConfiguration>();
 
-        var processor = new MessageProcessor(s3Client, sqsClient, new KboSyncConfiguration
+        var processor = new MessageProcessor(new KboSyncConfiguration
         {
             MutationFileQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.MutationFileQueueUrl)],
             SyncQueueUrl = awsConfigurationSection[nameof(WellKnownQueueNames.SyncQueueUrl)]!
