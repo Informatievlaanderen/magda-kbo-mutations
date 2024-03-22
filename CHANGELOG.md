@@ -1,3 +1,10 @@
+## [1.0.14](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.13...v1.0.14) (2024-03-22)
+
+
+### Bug Fixes
+
+* or-2149 initiator is ovo code specified ([da18975](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/da189756f7a136a5baf1105540c9ea8bee62b29f))
+
 ## [1.0.13](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.12...v1.0.13) (2024-03-21)
 
 
