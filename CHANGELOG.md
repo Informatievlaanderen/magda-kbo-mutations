@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.14...v1.1.0) (2024-03-25)
+
+
+### Features
+
+* or-2151 update nuget libs ([fb231cb](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/fb231cb390782aecd6f41ca1c8b42d571a280315))
+
 ## [1.0.14](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.13...v1.0.14) (2024-03-22)
 
 
