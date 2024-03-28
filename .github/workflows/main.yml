@@ -470,7 +470,7 @@ jobs:
           aws s3 cp ~/AssociationRegistry.KboMutations.MutationFileLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_BASEURL: '460116816372-lambda-mutationfile'
+          S3_BASEURL: ${{ secrets.S3_LAMBDA_MUTATIONFILE_BUCKET }}
           
   upload-sync-lambda:
     name: Upload Sync Lambda
@@ -498,7 +498,7 @@ jobs:
           aws s3 cp ~/AssociationRegistry.KboMutations.SyncLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_BASEURL: '460116816372-lambda-sync'
+          S3_BASEURL: ${{ secrets.S3_LAMBDA_SYNC_BUCKET }}
 
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
@@ -620,9 +620,10 @@ jobs:
       - name: Prepare Lambda
         shell: bash
         run: |
-          aws s3 cp s3://460116816372-lambda-mutationfile/$VERSION/lambda.zip s3://716164567317-lambda-mutationfile/lambda.zip --copy-props none
+          aws s3 cp s3://$S3_BUCKET/$VERSION/lambda.zip s3://716164567317-lambda-mutationfile/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
+          S3_BUCKET: ${{ secrets.S3_LAMBDA_MUTATIONFILE_BUCKET }}
 
       - name: Promote Lambda
         shell: bash

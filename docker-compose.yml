@@ -2,9 +2,15 @@ version: '3.8'
 
 services:
 
+  localstack-lambda-deploy:
+    image: vr_kbo_lambuild_sync
+    container_name: vr_kbo_localstack_deploy
+    volumes:
+      - ./src/:/app
+      
   localstack:
     image: localstack/localstack
-    container_name: kbomutations_localstack
+    container_name: vr_kbo_localstack
     ports:
       - 127.0.0.1:4566:4566            # LocalStack Gateway
       - 127.0.0.1:4510-4559:4510-4559  # external services port range
@@ -25,12 +31,12 @@ services:
       - .localstack/s3data:/tmp/localstack-s3-storage
       - localstack-data:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
-    networks: 
-      - localstack-net
+    networks:
+      - vr-kbo-net  
 
   wiremock:
     image: wiremock/wiremock:2.35.0-1
-    container_name: vr_wiremock
+    container_name: vr_kbo_wiremock
     ports:
       - 8080:8080
     command:
@@ -38,18 +44,22 @@ services:
       - -global-response-templating
     volumes:
       - ./wiremock:/home/wiremock
-    networks: 
-      - localstack-net
+    networks:
+      - vr-kbo-net
+
   acm:
     image: ghcr.io/informatievlaanderen/identity-server-fake:1284967
+    container_name: vr_kbo_acm
     volumes:
       - ./identityserver:/home/identityserver
     ports:
       - "5051:80"
     networks:
-      - localstack-net
+      - vr-kbo-net
+
   seq:
     image: datalust/seq
+    container_name: vr_kbo_seq
     restart: always
     ports:
       - "9580:80"
@@ -58,9 +68,11 @@ services:
     volumes:
       - seq-data:/data
     networks:
-      - localstack-net
+      - vr-kbo-net
+
   admin-api:
     image: 460116816372.dkr.ecr.eu-west-1.amazonaws.com/verenigingsregister-adminapi:8.84.0
+    container_name: vr_kbo_admin-api
     environment:
       OrganisationRegistryUri: https://organisation.dev-vlaanderen.be/
       PostgreSQLOptions__Host: db
@@ -93,11 +105,11 @@ services:
     ports:
       - 11004:11004
     networks:
-      - localstack-net
+      - vr-kbo-net
 
   ftp:
     image: rhrn/vsftpd
-    container_name: kbomutations_sftp
+    container_name: vr_kbo_vsftpd
     environment:
       - PASSWORD=FSBhuNOR
     ports:
@@ -107,8 +119,12 @@ services:
       - ./sftp/cert:/etc/vsftpd/
       # - ./sftp/logs/vsftpd.log:/var/log/vsftpd.log
       - ./sftp/files:/home/files
+    networks:
+      - vr-kbo-net
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+    container_name: vr_kbo_elasticsearch
     ports:
       - "9200:9200"
     environment:
@@ -121,10 +137,11 @@ services:
     volumes:
       - es-data:/usr/share/elasticsearch/data
     networks:
-      - localstack-net
+      - vr-kbo-net
+
   db:
-    container_name: kbomutations_db
     image: postgres:15.0
+    container_name: vr_kbo_postgres
     restart: always
     environment:
       POSTGRES_USER: root
@@ -135,21 +152,24 @@ services:
     volumes:
       - pg-data:/var/lib/postgresql/data
     networks:
-      - localstack-net
+      - vr-kbo-net
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib
+    container_name: vr_kbo_opentelemetry
     command: [ "--config=/etc/otel-collector-config.yaml" ]
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
       - "4317:4317"   # OTLP gRPC receiver
     networks:
-      - localstack-net
+      - vr-kbo-net
+
 volumes:
   localstack-data:
   seq-data:
   pg-data:
   es-data:
+
 networks:
-  localstack-net:
+  vr-kbo-net:

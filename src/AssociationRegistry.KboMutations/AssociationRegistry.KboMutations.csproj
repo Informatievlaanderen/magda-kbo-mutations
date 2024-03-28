@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>AssocationRegistry.KboMutations</RootNamespace>
@@ -11,7 +11,6 @@
         <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
         <PackageReference Include="Amazon.Lambda.Core"/>
         <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson"/>
-        <PackageReference Include="AWSSDK.SimpleSystemsManagement" />
         <PackageReference Include="Be.Vlaanderen.Basisregisters.AssociationRegistry" />
         <PackageReference Include="CsvHelper"/>
         <PackageReference Include="AWSSDK.S3"/>

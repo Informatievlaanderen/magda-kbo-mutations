@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		invoke.local.sh = invoke.local.sh
 		README.md = README.md
 		package.json = package.json
+		Dockerfile = Dockerfile
+		entrypoint.sh = entrypoint.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{26FCD4EA-8B49-4F8E-8E68-C63576940F0C}"
@@ -73,7 +75,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssociationRegistry.KboMuta
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lambda", "lambda", "{4FADDBD7-41D6-4C73-9EEB-32036912878F}"
 	ProjectSection(SolutionItems) = preProject
-		.localstack\lambda\mutation.zip = .localstack\lambda\mutation.zip
 		.localstack\lambda\mutationfile.zip = .localstack\lambda\mutationfile.zip
 		.localstack\lambda\sync.zip = .localstack\lambda\sync.zip
 	EndProjectSection
