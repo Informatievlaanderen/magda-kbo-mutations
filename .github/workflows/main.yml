@@ -470,7 +470,7 @@ jobs:
           aws s3 cp ~/AssociationRegistry.KboMutations.MutationFileLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_BASEURL: '460116816372-lambda-mutationfile'
+          S3_BASEURL: 's3-verenigingsregister-lam-kbo-mutations-file-460116816372'
           
   upload-sync-lambda:
     name: Upload Sync Lambda
@@ -498,7 +498,7 @@ jobs:
           aws s3 cp ~/AssociationRegistry.KboMutations.SyncLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_BASEURL: '460116816372-lambda-sync'
+          S3_BASEURL: 's3-verenigingsregister-lam-kbo-sync-460116816372'
 
   publish_to_atlassian:
     if: needs.release.outputs.version != 'none'
@@ -569,100 +569,103 @@ jobs:
           JIRA_PREFIX: Association-KboMutations
           JIRA_PROJECT: OR
           JIRA_VERSION: ${{ needs.set-release-version.outputs.version }}
-            
-  
-  deploy-mutation-lambda-test:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ publish_to_atlassian ]
-    name: Deploy mutation lambda (Test)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: CD Lambda(s) Configure credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-      - name: Prepare Lambda
-        shell: bash
-        run: |
-          aws s3 cp s3://460116816372-lambda-mutation/$VERSION/lambda.zip s3://716164567317-lambda-mutation/lambda.zip --copy-props none
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-
-      - name: Promote Lambda
-        shell: bash
-        run: |
-          docker pull ghcr.io/okigan/awscurl:latest
-          docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "kbo-mutations", "project": "kbomutations", "domain": "verenigingsregister" }' $PROMOTEURL/test
-        env:
-          ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-          PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
-
-  deploy-mutation-file-lambda-test:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ publish_to_atlassian ]
-    name: Deploy mutation file lambda (Test)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: CD Lambda(s) Configure credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-      - name: Prepare Lambda
-        shell: bash
-        run: |
-          aws s3 cp s3://460116816372-lambda-mutationfile/$VERSION/lambda.zip s3://716164567317-lambda-mutationfile/lambda.zip --copy-props none
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-
-      - name: Promote Lambda
-        shell: bash
-        run: |
-          docker pull ghcr.io/okigan/awscurl:latest
-          docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "kbo-mutations-file", "project": "kbomutations", "domain": "verenigingsregister" }' $PROMOTEURL/test
-        env:
-          ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-          PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
-
-  deploy-sync-lambda-test:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ publish_to_atlassian ]
-    name: Deploy sync lambda (Test)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: CD Lambda(s) Configure credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
-
-      - name: Prepare Lambda
-        shell: bash
-        run: |
-          aws s3 cp s3://460116816372-lambda-sync/$VERSION/lambda.zip s3://716164567317-lambda-sync/lambda.zip --copy-props none
-        env:
-          VERSION: ${{ needs.release.outputs.version }}
-
-      - name: Promote Lambda
-        shell: bash
-        run: |
-          docker pull ghcr.io/okigan/awscurl:latest
-          docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "kbo-sync", "project": "kbomutations", "domain": "verenigingsregister" }' $PROMOTEURL/test
-        env:
-          ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
-          PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
+    
+#  deploy-mutation-lambda-test:
+#    if: github.repository_owner == 'Informatievlaanderen'
+#    needs: [ publish_to_atlassian ]
+#    name: Deploy mutation lambda (Test)
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: CD Lambda(s) Configure credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+#
+#      - name: Prepare Lambda
+#        shell: bash
+#        run: |
+#          aws s3 cp s3://460116816372-lambda-mutation/$VERSION/lambda.zip s3://716164567317-lambda-mutation/lambda.zip --copy-props none
+#        env:
+#          VERSION: ${{ needs.release.outputs.version }}
+#
+#      - name: Promote Lambda
+#        shell: bash
+#        run: |
+#          docker pull ghcr.io/okigan/awscurl:latest
+#          docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "kbo-mutations", "project": "kbomutations", "domain": "verenigingsregister" }' $PROMOTEURL/test
+#        env:
+#          ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
+#          PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
+#
+#  deploy-mutation-file-lambda-test:
+#    if: github.repository_owner == 'Informatievlaanderen'
+#    needs: [ publish_to_atlassian ]
+#    name: Deploy mutation file lambda (Test)
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: CD Lambda(s) Configure credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+#
+#      - name: Prepare Lambda
+#        shell: bash
+#        run: |
+#          aws s3 cp s3://$S3_BUCKETNAME_DEVOPS/$VERSION/lambda.zip s3://$S3_BUCKETNAME_TEST/lambda.zip --copy-props none
+#        env:
+#          S3_BUCKETNAME_DEVOPS: 's3-verenigingsregister-lam-kbo-mutations-file-460116816372'
+#          S3_BUCKETNAME_TEST: 's3-verenigingsregister-lam-kbo-mutations-file-716164567317'
+#          VERSION: ${{ needs.release.outputs.version }}
+#
+#      - name: Promote Lambda
+#        shell: bash
+#        run: |
+#          docker pull ghcr.io/okigan/awscurl:latest
+#          docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "kbo-mutations-file", "project": "kbomutations", "domain": "verenigingsregister" }' $PROMOTEURL/test
+#        env:
+#          ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
+#          PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
+#
+#  deploy-sync-lambda-test:
+#    if: github.repository_owner == 'Informatievlaanderen'
+#    needs: [ publish_to_atlassian ]
+#    name: Deploy sync lambda (Test)
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: CD Lambda(s) Configure credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-region: ${{ secrets.VBR_AWS_REGION_PRD }}
+#
+#      - name: Prepare Lambda
+#        shell: bash
+#        run: |
+#          aws s3 cp s3://$S3_BUCKETNAME_DEVOPS/$VERSION/lambda.zip s3://$S3_BUCKETNAME_TEST/lambda.zip --copy-props none
+#        env:
+#          S3_BUCKETNAME_DEVOPS: 's3-verenigingsregister-lam-kbo-sync-460116816372'
+#          S3_BUCKETNAME_TEST: 's3-verenigingsregister-lam-kbo-sync-716164567317'
+#          VERSION: ${{ needs.release.outputs.version }}
+#
+#      - name: Promote Lambda
+#        shell: bash
+#        run: |
+#          docker pull ghcr.io/okigan/awscurl:latest
+#          docker run --rm okigan/awscurl --access_key $ACCESS_KEY_ID --secret_key $SECRET_ACCESS_KEY_ID --region $REGION -X POST -d '{ "functionName": "kbo-sync", "project": "kbomutations", "domain": "verenigingsregister" }' $PROMOTEURL/test
+#        env:
+#          ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          SECRET_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          REGION: ${{ secrets.VBR_AWS_REGION_PRD }}
+#          PROMOTEURL: ${{ secrets.AWS_PROMOTE_LAMBDA_BASEURL }}
