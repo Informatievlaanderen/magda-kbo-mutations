@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.1.0...v1.2.0) (2024-04-03)
+
+
+### Features
+
+* upload lambda packages to devops buckets ([053d599](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/053d5995f56088594a1ea5c4614b3e00bc6d012f))
+
 # [1.1.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.0.14...v1.1.0) (2024-03-25)
 
 
