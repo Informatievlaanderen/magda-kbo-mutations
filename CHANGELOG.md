@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.2.0...v1.2.1) (2024-04-10)
+
+
+### Bug Fixes
+
+* package update and net7 instead ([fad48e6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/fad48e6ee28717879a9ec29dbe0f82c3f00d862d))
+
 # [1.2.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.1.0...v1.2.0) (2024-04-03)
 
 
