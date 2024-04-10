@@ -13,6 +13,9 @@ appsettings.*.json
 *.userosscache
 *.sln.docstates
 
+sftp/files/in/
+.localstack/s3data
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

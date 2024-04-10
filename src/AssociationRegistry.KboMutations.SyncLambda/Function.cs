@@ -50,7 +50,7 @@ public class Function
 
         var configuration = configurationBuilder.Build();
         var awsConfigurationSection = configuration
-            .GetSection("AWS");
+            .GetSection("KboSync");
 
         var paramNamesConfiguration = configuration
             .GetSection(ParamNamesConfiguration.Section)
