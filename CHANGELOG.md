@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.2.1...v1.3.0) (2024-04-15)
+
+
+### Features
+
+* or-2134 update calls to libs ([85e24b6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/85e24b696c17283cdcb8fe2d97a442412aec8470))
+* or-2134 update libs ([9c5d34c](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/9c5d34cec60891cb8b082ff3c1d6a29b7e8c8907))
+
 ## [1.2.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.2.0...v1.2.1) (2024-04-10)
 
 
