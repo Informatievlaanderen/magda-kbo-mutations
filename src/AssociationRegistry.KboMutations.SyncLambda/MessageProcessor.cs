@@ -12,6 +12,7 @@ using AssociationRegistry.Magda;
 using AssociationRegistry.Notifications;
 using AssociationRegistry.Notifications.Messages;
 using AssociationRegistry.Vereniging;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using ResultNet;
 
@@ -28,17 +29,24 @@ public class MessageProcessor
     }
 
     public async Task ProcessMessage(SQSEvent sqsEvent, 
-        ILambdaLogger contextLogger,
-        MagdaGeefVerenigingService geefOndernemingService,
+        ILoggerFactory loggerFactory,
+        IMagdaRegistreerInschrijvingService registreerInschrijvingService,
+        IMagdaGeefVerenigingService geefOndernemingService,
         IVerenigingsRepository repository,
         INotifier notifier,
         CancellationToken cancellationToken)
     {
+        var contextLogger = loggerFactory.CreateLogger<MessageProcessor>();
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileBucketName)}:{_kboSyncConfiguration.MutationFileBucketName}");
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.MutationFileQueueUrl)}:{_kboSyncConfiguration.MutationFileQueueUrl}");
         contextLogger.LogInformation($"{nameof(_kboSyncConfiguration.SyncQueueUrl)}:{_kboSyncConfiguration.SyncQueueUrl}");
 
-        var handler = new SyncKboCommandHandler(geefOndernemingService, notifier);
+        var handler = new SyncKboCommandHandler(
+            registreerInschrijvingService,
+            geefOndernemingService, 
+            notifier,
+            loggerFactory.CreateLogger<SyncKboCommandHandler>()
+            );
         
         foreach (var record in sqsEvent.Records)
         {
@@ -46,7 +54,7 @@ public class MessageProcessor
         }
     }
 
-    private static async Task TryProcessRecord(ILambdaLogger contextLogger, IVerenigingsRepository repository,
+    private static async Task TryProcessRecord(ILogger contextLogger, IVerenigingsRepository repository,
         INotifier notifier, CancellationToken cancellationToken, SQSEvent.SQSMessage record, SyncKboCommandHandler handler)
     {
         try
