@@ -9,6 +9,7 @@ using Amazon.SQS;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Notifications;
+using AssociationRegistry.Acties.SyncKbo;
 using AssociationRegistry.EventStore;
 using AssociationRegistry.KboMutations.SyncLambda.Configuration;
 using AssociationRegistry.KboMutations.SyncLambda.JsonSerialization;
@@ -80,16 +81,24 @@ public class Function
             new TemporaryMagdaVertegenwoordigersSection(),
             loggerFactory.CreateLogger<MagdaGeefVerenigingService>());
 
+        var registreerinschrijvingService = new MagdaRegistreerInschrijvingService(
+            new MagdaCallReferenceRepository(store.LightweightSession()),
+            new MagdaClient(magdaOptions, loggerFactory.CreateLogger<MagdaClient>()),
+            loggerFactory.CreateLogger<MagdaRegistreerInschrijvingService>());
+
         var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger)
             .Create();
         
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS RECEIVED INSIDE SQS EVENT");
-        await processor!.ProcessMessage(@event, context.Logger, geefOndernemingService, repository,
+        await processor!.ProcessMessage(
+            @event,
+            loggerFactory,
+            registreerinschrijvingService,
+            geefOndernemingService, repository,
             notifier,
             CancellationToken.None);
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
     }
-
     
     private static async Task<MagdaOptionsSection> GetMagdaOptions(IConfiguration config,
         SsmClientWrapper ssmClient, 
