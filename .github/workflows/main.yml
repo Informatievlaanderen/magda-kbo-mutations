@@ -54,7 +54,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '7.x'
+          dotnet-version: '7.0.408'
 
       - name: .NET version
         shell: bash
@@ -176,7 +176,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '7.x'
+          dotnet-version: '7.0.408'
 
       - name: .NET version
         shell: bash
@@ -243,7 +243,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '7.x'
+        dotnet-version: '7.0.408'
 
     - name: .NET version
       shell: bash
@@ -304,7 +304,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '7.x'
+          dotnet-version: '7.0.408'
 
       - name: .NET version
         shell: bash
@@ -538,7 +538,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '7.x'
+          dotnet-version: '7.0.408'
 
       - name: .NET version
         shell: bash
