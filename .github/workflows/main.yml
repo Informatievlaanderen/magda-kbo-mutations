@@ -464,12 +464,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.VBR_AWS_REGION }}
 
+      - name: Show AWS CLI version
+        shell: bash
+        run: aws --version
+
       - name: Upload Lambda function
         shell: bash
         run: |
           aws s3 cp ~/AssociationRegistry.KboMutations.MutationFileLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
+          # S3_BASEURL: 's3-verenigingsregister-lam-kbo-mutations-file-460116816372'
           S3_BASEURL: 's3-verenigingsregister-lam-kbo-mutations-file-716164567317'
           
   upload-sync-lambda:
@@ -492,12 +497,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.VBR_AWS_REGION }}
 
+      - name: Show AWS CLI version
+        shell: bash
+        run: aws --version
+        
       - name: Upload Lambda function
         shell: bash
         run: |
           aws s3 cp ~/AssociationRegistry.KboMutations.SyncLambda.zip s3://$S3_BASEURL/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
+          # S3_BASEURL: 's3-verenigingsregister-lam-kbo-sync-460116816372'
           S3_BASEURL: 's3-verenigingsregister-lam-kbo-sync-716164567317'
 
   publish_to_atlassian:
