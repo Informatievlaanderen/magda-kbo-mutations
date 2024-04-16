@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.0...v1.4.1) (2024-04-16)
+
+
+### Bug Fixes
+
+* update dotnet version for main workflow ([7ba2c55](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/7ba2c550f4aedde05495952b98e7d18c7cce069e))
+
 # [1.4.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.3.0...v1.4.0) (2024-04-15)
 
 
