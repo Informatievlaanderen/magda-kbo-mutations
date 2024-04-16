@@ -1,3 +1,10 @@
+## [1.4.4](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.3...v1.4.4) (2024-04-16)
+
+
+### Bug Fixes
+
+* attempt s3 upload via put-object instead ([b062ff6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/b062ff65939f232b20b50da3abf696d70afbf01f))
+
 ## [1.4.3](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.2...v1.4.3) (2024-04-16)
 
 
