@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.1...v1.4.2) (2024-04-16)
+
+
+### Bug Fixes
+
+* change s3 base uri for lambda package upload ([cb290f5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/cb290f5941042042ed962640e78613387748400a))
+
 ## [1.4.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.0...v1.4.1) (2024-04-16)
 
 
