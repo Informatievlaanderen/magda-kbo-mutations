@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.2...v1.4.3) (2024-04-16)
+
+
+### Bug Fixes
+
+* include aws cli version output ([31e7e38](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/31e7e38ff785d4eeaefa4e6d1be3e9527715e512))
+
 ## [1.4.2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.1...v1.4.2) (2024-04-16)
 
 
