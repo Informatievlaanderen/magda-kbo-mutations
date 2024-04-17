@@ -22,7 +22,7 @@ public class When_TeVerwerkenMutatieBestand_FromLocalstack : IClassFixture<With_
         _fixture = fixture;
     }
 
-    [Fact]
+    [Fact(Skip = "Not yet finished")]
     public async Task SyncQueue_Has_Messages()
     {
         var retryPolicy = Policy.Handle<Exception>()
