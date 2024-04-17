@@ -1,5 +1,0 @@
-﻿namespace AssociationRegistry.KboMutations.MutationLambda.Tests.WhenProcessMutationFile.Fixtures;
-
-public class WithSingleMutationFileToProcessFixture : WithMutationFileToProcessFixture
-{
-}
