@@ -15,6 +15,10 @@ public class FtpsListItemParserTests
       
         var ftpsListItems = FtpsListParser.Parse(new FtpUriBuilder("host", 21), result);
 
-        ftpsListItems.Should().HaveCount(2);
+        ftpsListItems.Should().BeEquivalentTo(new[]
+        {
+new FtpsListItem("pub_mut_klanten-functies0200_20240322043924000.csv", "/pub_mut_klanten-functies0200_20240322043924000.csv", "/", "0"),
+new FtpsListItem("pub_mut-ondernemingVKBO0200_20240417031451000.xml", "/pub_mut-ondernemingVKBO0200_20240417031451000.xml", "/", "2260")
+        });
     }
 }
