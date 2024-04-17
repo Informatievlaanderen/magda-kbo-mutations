@@ -1,3 +1,10 @@
+## [1.4.5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.4...v1.4.5) (2024-04-17)
+
+
+### Bug Fixes
+
+* or-2134 remove duplicate ref ([f5f5a2a](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/f5f5a2accceb80a978001c0e30afadbac8e42cc4))
+
 ## [1.4.4](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.3...v1.4.4) (2024-04-16)
 
 
