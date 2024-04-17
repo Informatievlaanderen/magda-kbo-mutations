@@ -16,7 +16,6 @@
         <PackageReference Include="CsvHelper"/>
         <PackageReference Include="AWSSDK.S3"/>
         <PackageReference Include="AWSSDK.SQS"/>
-        <PackageReference Include="AWSSDK.SimpleSystemsManagement" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
         <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
