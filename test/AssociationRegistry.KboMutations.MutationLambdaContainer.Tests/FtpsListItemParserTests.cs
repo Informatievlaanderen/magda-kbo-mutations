@@ -11,14 +11,8 @@ public class FtpsListItemParserTests
     [Fact]
     public void ParsesString()
     {
-        var ftpsClient = new Mock<IFtpsClient>();
-
-        var result = @$"-rw-rw-r--   1 kbbj.vlaanderen.be-dv-verenigingsregister-ftp kbbj.vlaanderen.be-dv-verenigingsregister-ftp        0 Mar 22 05:41 pub_mut_klanten-functies0200_20240322043924000.csv{System.Environment.NewLine}-rw-rw-r--   1 kbbj.vlaanderen.be-dv-verenigingsregister-ftp kbbj.vlaanderen.be-dv-verenigingsregister-ftp     2260 Apr 17 05:18 pub_mut-ondernemingVKBO0200_20240417031451000.xml";
-        ftpsClient.Setup(x => x.GetListing(It.IsAny<string>()))
-            .Returns(
-                result);
-
-
+        var result = $"-rw-rw-r--   1 kbbj.vlaanderen.be-dv-verenigingsregister-ftp kbbj.vlaanderen.be-dv-verenigingsregister-ftp        0 Mar 22 05:41 pub_mut_klanten-functies0200_20240322043924000.csv{Environment.NewLine}-rw-rw-r--   1 kbbj.vlaanderen.be-dv-verenigingsregister-ftp kbbj.vlaanderen.be-dv-verenigingsregister-ftp     2260 Apr 17 05:18 pub_mut-ondernemingVKBO0200_20240417031451000.xml";
+      
         var ftpsListItems = FtpsListParser.Parse(new FtpUriBuilder("host", 21), result);
 
         ftpsListItems.Should().HaveCount(2);
