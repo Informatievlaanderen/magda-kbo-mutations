@@ -1,3 +1,10 @@
+## [1.4.6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.5...v1.4.6) (2024-04-22)
+
+
+### Bug Fixes
+
+* run workflow to check pipeline ([658141c](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/658141cd163b059cfea6ba04f23212c1b00ead9e))
+
 ## [1.4.5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.4...v1.4.5) (2024-04-17)
 
 
