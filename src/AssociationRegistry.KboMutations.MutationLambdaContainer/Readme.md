@@ -1,6 +1,7 @@
 # Kbo Mutations Lambda
 
 Periodically fetches the mutation files containing recently changed associations, and puts them in S3 and SQS.
+
 ## Main dependencies
 
 - curl to fetch mutations via sftp
@@ -38,3 +39,5 @@ Deploy function to AWS Lambda
     cd "AssociationRegistry.KboMutations.SyncLambda/src/AssociationRegistry.KboMutations.SyncLambda"
     dotnet lambda deploy-function
 ```
+
+EOF
