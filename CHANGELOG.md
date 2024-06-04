@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.0...v1.5.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* or-1566 remove comment; dummy commit ([e0540a1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/e0540a16dd196a52b1fa332502e07dcef85abe99))
+
 # [1.5.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.6...v1.5.0) (2024-06-04)
 
 
