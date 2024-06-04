@@ -279,7 +279,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: lambda-mutationfile-${{ needs.set-release-version.outputs.version }}
-        path: src/AssociationRegistry.KboMutations.MutationFileLambda/bin/Release/net7.0/AssociationRegistry.KboMutations.MutationFileLambda.zip
+        path: src/AssociationRegistry.KboMutations.MutationFileLambda/bin/Release/net8.0/AssociationRegistry.KboMutations.MutationFileLambda.zip
 
   build-sync-lambda:
     name: Build Sync Lambda
@@ -325,7 +325,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lambda-sync-${{ needs.set-release-version.outputs.version }}
-          path: src/AssociationRegistry.KboMutations.SyncLambda/bin/Release/net7.0/AssociationRegistry.KboMutations.SyncLambda.zip
+          path: src/AssociationRegistry.KboMutations.SyncLambda/bin/Release/net8.0/AssociationRegistry.KboMutations.SyncLambda.zip
 
   release:
     if: needs.set-release-version.outputs.version != 'none'

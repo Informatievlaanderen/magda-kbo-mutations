@@ -1,6 +1,6 @@
 #!/bin/sh
 dotnet lambda package --region us-east-1
-#mv ./bin/Release/net7.0/AssociationRegistry.KboMutations.MutationFileLambda.zip ../../.localstack/lambda/mutationfile.zip
+#mv ./bin/Release/net8.0/AssociationRegistry.KboMutations.MutationFileLambda.zip ../../.localstack/lambda/mutationfile.zip
 
 #dotnet lambda package 
 #
@@ -9,7 +9,7 @@ FUNCTION_NAME="mutationfile-lambda"
 REGION="us-east-1"
 ROLE_ARN="arn:aws:iam::000000000000:role/dummy-role"
 HANDLER="AssociationRegistry.KboMutations.MutationFileLambda"
-ZIP_FILE_PATH="fileb://bin/Release/net7.0/AssociationRegistry.KboMutations.MutationFileLambda.zip"
+ZIP_FILE_PATH="fileb://bin/Release/net8.0/AssociationRegistry.KboMutations.MutationFileLambda.zip"
 EVENT_SOURCE_ARN="arn:aws:sqs:us-east-1:000000000000:verenigingsregister-kbomutations-mutationfile"
 BATCH_SIZE=1
 
