@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.2...v1.5.3) (2024-06-04)
+
+
+### Bug Fixes
+
+* or-1566 add nuget pakages in Publish to Atlassian ([c0607fc](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/c0607fc5fd97754ff8722df0332d96db7c7e7a9d))
+
 ## [1.5.2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.1...v1.5.2) (2024-06-04)
 
 
