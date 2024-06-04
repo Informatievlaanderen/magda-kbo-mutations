@@ -7,6 +7,3 @@ dotnet build -c Release --no-restore --runtime 'linux-x64' --self-contained -f n
 cd src/$1
 dotnet publish -c Release -o ../../dist/$1/linux --no-build --no-restore --runtime 'linux-x64' --self-contained -f net8.0
 cd ../../
-
-#dotnet publish -o dist/$1/linux --no-build --no-restore --runtime 'linux-x64' --self-contained -f net8.0 src/$1
-
