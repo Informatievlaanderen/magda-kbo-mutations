@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.1...v1.5.2) (2024-06-04)
+
+
+### Bug Fixes
+
+* or-1566 add buildpipeline nuget ([c455a11](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/c455a11f3f102cbedfa39e2346afaed5f09aade1))
+
 ## [1.5.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.0...v1.5.1) (2024-06-04)
 
 
