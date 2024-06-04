@@ -35,8 +35,6 @@ public class MessageProcessor
         IMagdaRegistreerInschrijvingService registreerInschrijvingService,
         IMagdaGeefVerenigingService geefOndernemingService,
         IVerenigingsRepository repository,
-        IMartenOutbox outbox,
-        IDocumentSession session,
         INotifier notifier,
         CancellationToken cancellationToken)
     {
@@ -48,8 +46,6 @@ public class MessageProcessor
         var handler = new SyncKboCommandHandler(
             registreerInschrijvingService,
             geefOndernemingService, 
-            outbox,
-            session,
             notifier,
             loggerFactory.CreateLogger<SyncKboCommandHandler>()
             );

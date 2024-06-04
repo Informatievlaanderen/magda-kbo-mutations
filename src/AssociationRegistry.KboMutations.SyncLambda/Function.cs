@@ -3,13 +3,10 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Amazon.Lambda.SQSEvents;
-using Amazon.S3;
 using Amazon.SimpleSystemsManagement;
-using Amazon.SQS;
 using AssocationRegistry.KboMutations;
 using AssocationRegistry.KboMutations.Configuration;
 using AssocationRegistry.KboMutations.Notifications;
-using AssociationRegistry.Acties.SyncKbo;
 using AssociationRegistry.EventStore;
 using AssociationRegistry.KboMutations.SyncLambda.Configuration;
 using AssociationRegistry.KboMutations.SyncLambda.JsonSerialization;
@@ -17,19 +14,14 @@ using AssociationRegistry.KboMutations.SyncLambda.Logging;
 using AssociationRegistry.Magda;
 using AssociationRegistry.Magda.Configuration;
 using AssociationRegistry.Magda.Models;
-using Lamar;
 using Marten;
 using Marten.Events;
 using Marten.Services;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Npgsql;
 using Weasel.Core;
-using Wolverine;
-using Wolverine.Marten;
-using Wolverine.Runtime;
 using SsmClientWrapper = AssocationRegistry.KboMutations.SsmClientWrapper;
 
 namespace AssociationRegistry.KboMutations.SyncLambda;
@@ -46,11 +38,6 @@ public class Function
 
     private static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
-        var services = new ServiceCollection();
-        
-        var s3Client = new AmazonS3Client();
-        var sqsClient = new AmazonSQSClient();
-
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", true, true)
@@ -95,11 +82,6 @@ public class Function
             new MagdaCallReferenceRepository(store.LightweightSession()),
             new MagdaClient(magdaOptions, loggerFactory.CreateLogger<MagdaClient>()),
             loggerFactory.CreateLogger<MagdaRegistreerInschrijvingService>());
-
-        var session = store.LightweightSession();
-        
-        var wolverineRuntime = new WolverineRuntime(new WolverineOptions(), new Container(n))
-        var outbox = new MartenOutbox(wolverineRuntime, session);
         
         var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger)
             .Create();
@@ -111,8 +93,6 @@ public class Function
             registreerinschrijvingService,
             geefOndernemingService, 
             repository,
-            outbox,
-            session,
             notifier,
             CancellationToken.None);
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");
