@@ -99,7 +99,12 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
         
         await documentStore.Storage.Database.DeleteAllEventDataAsync();
 
-        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore));
+        
+        var eventConflictResolver =
+            new EventConflictResolver(Array.Empty<IEventPreConflictResolutionStrategy>(), Array.Empty<IEventPostConflictResolutionStrategy>());
+        
+        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore, eventConflictResolver));
+        
         foreach (var (kboNummer, vCode) in kboNummersToSeed)
         {
             var verenigingMetRechtspersoonlijkheid = VerenigingMetRechtspersoonlijkheid.Registreer(

@@ -62,7 +62,10 @@ public class With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture : WithLocals
         
         await documentStore.Storage.Database.DeleteAllEventDataAsync();
 
-        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore));
+        var eventConflictResolver =
+            new EventConflictResolver(Array.Empty<IEventPreConflictResolutionStrategy>(), Array.Empty<IEventPostConflictResolutionStrategy>());
+        
+        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore, eventConflictResolver));
 
         foreach (var (lijn, i) in MutatieLijnen.Select(((lijn, i) => (lijn, i))))
         {

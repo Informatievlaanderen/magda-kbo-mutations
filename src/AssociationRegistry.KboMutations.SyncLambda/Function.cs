@@ -17,14 +17,19 @@ using AssociationRegistry.KboMutations.SyncLambda.Logging;
 using AssociationRegistry.Magda;
 using AssociationRegistry.Magda.Configuration;
 using AssociationRegistry.Magda.Models;
+using Lamar;
 using Marten;
 using Marten.Events;
 using Marten.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Npgsql;
 using Weasel.Core;
+using Wolverine;
+using Wolverine.Marten;
+using Wolverine.Runtime;
 using SsmClientWrapper = AssocationRegistry.KboMutations.SsmClientWrapper;
 
 namespace AssociationRegistry.KboMutations.SyncLambda;
@@ -41,6 +46,8 @@ public class Function
 
     private static async Task FunctionHandler(SQSEvent @event, ILambdaContext context)
     {
+        var services = new ServiceCollection();
+        
         var s3Client = new AmazonS3Client();
         var sqsClient = new AmazonSQSClient();
 
@@ -67,8 +74,11 @@ public class Function
         var magdaOptions = await GetMagdaOptions(configuration, ssmClientWrapper, paramNamesConfiguration);
 
         var store = await SetUpDocumentStore(configuration, context.Logger, ssmClientWrapper, paramNamesConfiguration);
+
+        var eventConflictResolver = new EventConflictResolver(Array.Empty<IEventPreConflictResolutionStrategy>(),
+            Array.Empty<IEventPostConflictResolutionStrategy>());
         
-        var repository = new VerenigingsRepository(new EventStore.EventStore(store));
+        var repository = new VerenigingsRepository(new EventStore.EventStore(store, eventConflictResolver));
         
         var loggerFactory = LoggerFactory.Create(builder => 
         {
@@ -86,6 +96,11 @@ public class Function
             new MagdaClient(magdaOptions, loggerFactory.CreateLogger<MagdaClient>()),
             loggerFactory.CreateLogger<MagdaRegistreerInschrijvingService>());
 
+        var session = store.LightweightSession();
+        
+        var wolverineRuntime = new WolverineRuntime(new WolverineOptions(), new Container(n))
+        var outbox = new MartenOutbox(wolverineRuntime, session);
+        
         var notifier = await new NotifierFactory(ssmClientWrapper, paramNamesConfiguration, context.Logger)
             .Create();
         
@@ -94,7 +109,10 @@ public class Function
             @event,
             loggerFactory,
             registreerinschrijvingService,
-            geefOndernemingService, repository,
+            geefOndernemingService, 
+            repository,
+            outbox,
+            session,
             notifier,
             CancellationToken.None);
         context.Logger.LogInformation($"{@event.Records.Count} RECORDS PROCESSED BY THE MESSAGE PROCESSOR");

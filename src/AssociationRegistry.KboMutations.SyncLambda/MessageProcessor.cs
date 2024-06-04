@@ -12,9 +12,11 @@ using AssociationRegistry.Magda;
 using AssociationRegistry.Notifications;
 using AssociationRegistry.Notifications.Messages;
 using AssociationRegistry.Vereniging;
+using Marten;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using ResultNet;
+using Wolverine.Marten;
 
 namespace AssociationRegistry.KboMutations.SyncLambda;
 
@@ -33,6 +35,8 @@ public class MessageProcessor
         IMagdaRegistreerInschrijvingService registreerInschrijvingService,
         IMagdaGeefVerenigingService geefOndernemingService,
         IVerenigingsRepository repository,
+        IMartenOutbox outbox,
+        IDocumentSession session,
         INotifier notifier,
         CancellationToken cancellationToken)
     {
@@ -44,6 +48,8 @@ public class MessageProcessor
         var handler = new SyncKboCommandHandler(
             registreerInschrijvingService,
             geefOndernemingService, 
+            outbox,
+            session,
             notifier,
             loggerFactory.CreateLogger<SyncKboCommandHandler>()
             );
