@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.6...v1.5.0) (2024-06-04)
+
+
+### Features
+
+* or-1566 dotnet 8 upgrade ([a76803c](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/a76803cf38e1168bd4fcf52faf672a3ff49d00bc))
+
 ## [1.4.6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.4.5...v1.4.6) (2024-04-22)
 
 
