@@ -554,7 +554,7 @@ jobs:
         if: needs.set-release-version.outputs.version != 'none'
         shell: bash
         run: |
-          sed -i 's/packages\/Be\.Vlaanderen\.Basisregisters\.Build\.Pipeline\/Content\/ci-md2conf/packages\/be\.vlaanderen\.basisregisters\.build\.pipeline\/content\/ci-md2conf/gI' ./packages/be.vlaanderen.basisregisters.build.pipeline/7.2.6/Content/ci-confluence.sh
+          sed -i 's/packages\/Be\.Vlaanderen\.Basisregisters\.Build\.Pipeline\/Content\/ci-md2conf/packages\/be\.vlaanderen\.basisregisters\.build\.pipeline\/7.2.6\/Content\/ci-md2conf/gI' ./packages/be.vlaanderen.basisregisters.build.pipeline/7.2.6/Content/ci-confluence.sh
           ./packages/be.vlaanderen.basisregisters.build.pipeline/7.2.6/Content/ci-confluence.sh
         env:
           CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
