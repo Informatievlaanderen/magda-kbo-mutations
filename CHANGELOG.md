@@ -1,3 +1,10 @@
+## [1.5.6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.5...v1.5.6) (2024-06-05)
+
+
+### Bug Fixes
+
+* or-1566 incorrect filename for nuget.config ([10236cc](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/10236cc4906bd984e1dce0b72bf201b12ee53f10))
+
 ## [1.5.5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.4...v1.5.5) (2024-06-05)
 
 
