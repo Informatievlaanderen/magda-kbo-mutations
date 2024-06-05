@@ -540,10 +540,15 @@ jobs:
         shell: bash
         run: dotnet --info
 
-      - name: Restore dotnet tools
+      - name: Restore dotnet restore
         shell: bash
         run: |
-          dotnet tool restore
+          dotnet restore
+          
+      - name: Show folder output
+        shell: bash
+        run: |
+          ls -alR          
 
       - name: Publish to Confluence
         if: needs.set-release-version.outputs.version != 'none'
