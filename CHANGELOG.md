@@ -1,3 +1,10 @@
+## [1.5.11](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.10...v1.5.11) (2024-06-05)
+
+
+### Bug Fixes
+
+* or-1566 patch script location path ([bee08f5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/bee08f50d3fd921794d043b6aec3bcdc0a313342))
+
 ## [1.5.10](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.9...v1.5.10) (2024-06-05)
 
 
