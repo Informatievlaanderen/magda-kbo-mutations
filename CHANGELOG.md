@@ -1,3 +1,10 @@
+## [1.5.5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.4...v1.5.5) (2024-06-05)
+
+
+### Bug Fixes
+
+* or-1566 add solutation based nuget.conf for package download ([237ce60](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/237ce60cc3fe4a35ddff3ab7d9c5d2ec24c811dd))
+
 ## [1.5.4](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.3...v1.5.4) (2024-06-05)
 
 
