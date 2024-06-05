@@ -1,3 +1,10 @@
+## [1.5.7](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.6...v1.5.7) (2024-06-05)
+
+
+### Bug Fixes
+
+* or-1566 show folder output and restore before publishing to atlassian ([a265bfc](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/a265bfc99cd532d2dc8a73e77bbbb250ff197c87))
+
 ## [1.5.6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.5...v1.5.6) (2024-06-05)
 
 
