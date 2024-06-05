@@ -521,7 +521,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -534,22 +534,11 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ vars.VBR_DOTNET_VERSION_8 }}
+          dotnet-version: '7.0.408'
 
       - name: .NET version
         shell: bash
         run: dotnet --info
-
-      - name: Add Packages
-        shell: bash
-        run: |
-          echo '<?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <config>
-              <add key="globalPackagesFolder" value=".\packages"/>
-            </config>
-          </configuration> 
-          ' > NuGet.Config       
 
       - name: Restore dotnet tools
         shell: bash
