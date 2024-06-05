@@ -1,3 +1,10 @@
+## [1.5.4](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.3...v1.5.4) (2024-06-05)
+
+
+### Bug Fixes
+
+* or-1566 replace publish to atlassian step inside workflow ([96c2566](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/96c256649bd39555d5738d085c3f248ecda8d387))
+
 ## [1.5.3](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.2...v1.5.3) (2024-06-04)
 
 
