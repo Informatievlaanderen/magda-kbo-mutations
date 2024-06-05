@@ -1,3 +1,10 @@
+## [1.5.8](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.7...v1.5.8) (2024-06-05)
+
+
+### Bug Fixes
+
+* or-1566 require version folder for build pipeline ([ace1d0d](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/ace1d0dc890faa7a02a069479548e3d849725ec9))
+
 ## [1.5.7](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.6...v1.5.7) (2024-06-05)
 
 
