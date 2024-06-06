@@ -12,7 +12,6 @@
         <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson"/>
         <PackageReference Include="AWSSDK.SimpleSystemsManagement" />
         <PackageReference Include="Be.Vlaanderen.Basisregisters.AssociationRegistry" />
-        <PackageReference Include="Be.Vlaanderen.Basisregisters.Build.Pipeline" />
         <PackageReference Include="CsvHelper"/>
         <PackageReference Include="AWSSDK.S3"/>
         <PackageReference Include="AWSSDK.SQS"/>
