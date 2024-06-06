@@ -4,3 +4,7 @@ source https://api.nuget.org/v3/index.json
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline
 
 
+###################################################################################################################################
+################ We only use this file for the build pipeline, since nuget forces a different capitalization ######################
+###################################### DONT ADD PAKET.REFERENCES FILES IN THE PROJECTS ############################################
+###################################################################################################################################
