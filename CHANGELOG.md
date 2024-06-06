@@ -1,3 +1,11 @@
+## [1.5.14](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.13...v1.5.14) (2024-06-06)
+
+
+### Bug Fixes
+
+* or-1566 remove manual install of curl package ([1ac081b](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/1ac081bb91a4b6682cb8186e4c1525fb876a122d))
+* or-1566 update dockerfile to use dotnet8 ([987dd1c](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/987dd1c006faa956e3eafd084fe88c091b892568))
+
 ## [1.5.13](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.12...v1.5.13) (2024-06-06)
 
 
