@@ -544,6 +544,7 @@ jobs:
         shell: bash
         run: |
           dotnet tool install paket
+          dotnet paket install
           dotnet paket restore
 
       - name: Publish to Confluence
