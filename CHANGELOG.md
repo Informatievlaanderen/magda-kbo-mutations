@@ -1,3 +1,11 @@
+## [1.5.12](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.11...v1.5.12) (2024-06-06)
+
+
+### Bug Fixes
+
+* or-1566 remove reference ([0b809f5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/0b809f58bcd8ebfd2c179a25781172b6ecccc06a))
+* or-1566 use paket for build pipeline only ([37a65f4](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/37a65f4db09c7f63fdcf6bd7aedf43ea9927407f))
+
 ## [1.5.11](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.10...v1.5.11) (2024-06-05)
 
 
