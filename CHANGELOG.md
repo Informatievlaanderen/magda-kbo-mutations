@@ -1,3 +1,10 @@
+## [1.5.15](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.14...v1.5.15) (2024-06-06)
+
+
+### Bug Fixes
+
+* or-1566 add comment to right file ([88af164](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/88af16452db9378a64d3c03f95ea8bf44c25b85f))
+
 ## [1.5.14](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.13...v1.5.14) (2024-06-06)
 
 
