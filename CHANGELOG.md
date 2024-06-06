@@ -1,3 +1,10 @@
+## [1.5.13](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.12...v1.5.13) (2024-06-06)
+
+
+### Bug Fixes
+
+* or-1566 install with paket ([5e5070b](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/5e5070bfd6ae860fadda6f05d19f8614d182f052))
+
 ## [1.5.12](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.11...v1.5.12) (2024-06-06)
 
 
