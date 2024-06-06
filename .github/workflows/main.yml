@@ -543,19 +543,14 @@ jobs:
       - name: Restore dotnet restore
         shell: bash
         run: |
-          dotnet restore
-          
-      - name: Show folder output
-        shell: bash
-        run: |
-          ls -alR          
+          dotnet tool install paket
+          dotnet paket restore
 
       - name: Publish to Confluence
         if: needs.set-release-version.outputs.version != 'none'
         shell: bash
         run: |
-          sed -i 's/packages\/Be\.Vlaanderen\.Basisregisters\.Build\.Pipeline\/Content\/ci-md2conf/packages\/be\.vlaanderen\.basisregisters\.build\.pipeline\/7.2.6\/Content\/ci-md2conf/gI' ./packages/be.vlaanderen.basisregisters.build.pipeline/7.2.6/Content/ci-confluence.sh
-          ./packages/be.vlaanderen.basisregisters.build.pipeline/7.2.6/Content/ci-confluence.sh
+          ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh
         env:
           CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
           CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
@@ -564,7 +559,7 @@ jobs:
       - name: Create Jira Release
         if: needs.set-release-version.outputs.version != 'none'
         shell: bash
-        run: ./packages/be.vlaanderen.basisregisters.build.pipeline/7.2.6/Content/ci-jira.sh
+        run: ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh
         env:
           CONFLUENCE_TITLE: ${{ env.REPOSITORY_NAME }}
           CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}

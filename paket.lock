@@ -1,0 +1,8 @@
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    Be.Vlaanderen.Basisregisters.Build.Pipeline (7.2.6)
+
+###################################################################################################################################
+################ We only use this file for the build pipeline, since nuget forces a different capitalization ######################
+###################################### DONT ADD PAKET.REFERENCES FILES IN THE PROJECTS ############################################
+###################################################################################################################################

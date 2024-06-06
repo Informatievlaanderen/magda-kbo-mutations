@@ -14,7 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		invoke.local.sh = invoke.local.sh
 		README.md = README.md
 		package.json = package.json
-		NuGet.Config = NuGet.Config
+		paket.dependencies = paket.dependencies
+		paket.lock = paket.lock
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{26FCD4EA-8B49-4F8E-8E68-C63576940F0C}"
