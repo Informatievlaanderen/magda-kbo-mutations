@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.15...v1.6.0) (2024-07-18)
+
+
+### Features
+
+* update nuget packages to latest versions for association ([1428e8c](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/1428e8ccf6e895f9c63636b51e169c33b7bd41a3))
+
 ## [1.5.15](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.14...v1.5.15) (2024-06-06)
 
 
