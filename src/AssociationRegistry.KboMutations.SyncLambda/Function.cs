@@ -66,12 +66,12 @@ public class Function
         var eventConflictResolver = new EventConflictResolver(Array.Empty<IEventPreConflictResolutionStrategy>(),
             Array.Empty<IEventPostConflictResolutionStrategy>());
         
-        var repository = new VerenigingsRepository(new EventStore.EventStore(store, eventConflictResolver));
-        
         var loggerFactory = LoggerFactory.Create(builder => 
         {
             builder.AddProvider(new LambdaLoggerProvider(context.Logger));
         });
+        
+        var repository = new VerenigingsRepository(new EventStore.EventStore(store, eventConflictResolver, loggerFactory.CreateLogger<EventStore.EventStore>()));
         
         var geefOndernemingService = new MagdaGeefVerenigingService(
             new MagdaCallReferenceRepository(store.LightweightSession()),
