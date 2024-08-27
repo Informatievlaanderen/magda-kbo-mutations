@@ -18,6 +18,7 @@ using CsvHelper;
 using FluentAssertions;
 using Marten;
 using Marten.Events;
+using Microsoft.Extensions.Logging.Abstractions;
 using NodaTime;
 using Npgsql;
 using Weasel.Core;
@@ -65,7 +66,7 @@ public class With_TeVerwerkenMutatieBestand_In_Queue_And_S3_Fixture : WithLocals
         var eventConflictResolver =
             new EventConflictResolver(Array.Empty<IEventPreConflictResolutionStrategy>(), Array.Empty<IEventPostConflictResolutionStrategy>());
         
-        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore, eventConflictResolver));
+        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore, eventConflictResolver, new NullLogger<EventStore.EventStore>()));
 
         foreach (var (lijn, i) in MutatieLijnen.Select(((lijn, i) => (lijn, i))))
         {

@@ -16,6 +16,8 @@ using AutoBogus;
 using FluentAssertions;
 using Marten;
 using Marten.Events;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NodaTime;
 using Npgsql;
 using Weasel.Core;
@@ -76,7 +78,7 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
             AdditionalParams = "-k"
         };
 
-        await SeedVerenigingen(KboNummersToSeed);
+        await SeedVerenigingen(KboNummersToSeed, new NullLogger<EventStore.EventStore>());
 
         await ClearQueue(KboSyncConfiguration.MutationFileQueueUrl);
         await ClearQueue(KboSyncConfiguration.SyncQueueUrl);
@@ -91,7 +93,7 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
         await mutatieBestandProcessor.ProcessAsync();
     }
 
-    private static async Task SeedVerenigingen(Dictionary<KboNummer, VCode> kboNummersToSeed)
+    private static async Task SeedVerenigingen(Dictionary<KboNummer, VCode> kboNummersToSeed, ILogger<EventStore.EventStore> logger)
     {
         var documentStore = CreateDocumentStore();
         
@@ -103,7 +105,7 @@ public class With_TeVerwerkenMutatieBestand_FromLocalstack : WithLocalstackFixtu
         var eventConflictResolver =
             new EventConflictResolver(Array.Empty<IEventPreConflictResolutionStrategy>(), Array.Empty<IEventPostConflictResolutionStrategy>());
         
-        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore, eventConflictResolver));
+        var repo = new VerenigingsRepository(new EventStore.EventStore(documentStore, eventConflictResolver, logger));
         
         foreach (var (kboNummer, vCode) in kboNummersToSeed)
         {
