@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.6.0...v1.7.0) (2024-08-28)
+
+
+### Features
+
+* upgrade vbr libs to 8.133.5.3 ([f6a459b](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/f6a459b3b9da0d5e09ddab0a9cc3e04386267702))
+
 # [1.6.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.5.15...v1.6.0) (2024-07-18)
 
 
