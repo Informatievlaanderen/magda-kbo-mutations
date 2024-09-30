@@ -394,7 +394,7 @@ jobs:
         shell: bash
 
   upload-mutation-lambda:
-    name: Upload Mutation Lambda
+    name: Upload & Deploy Mutation Lambda
     needs: [ release ]
     runs-on: ubuntu-latest
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
@@ -429,20 +429,11 @@ jobs:
         env:
           SEMVER: ${{ needs.release.outputs.version }}
 
-  deploy-mutation-lambda-test:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs:
-      - release
-      - upload-mutation-lambda
-    name: Deploy mutation image (Test)
-    runs-on: ubuntu-latest
-
-    steps:
       - name: CD
         id: awscurl-polling-action
         env:
-          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/kbo-mutation/test/deploy/v4
-          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/kbo-mutation/test/deploy/v4/status
+          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/kbomutations/test/deploy/v4
+          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/kbomutations/test/deploy/v4/status
         uses: informatievlaanderen/awscurl-polling-action/polling-action@deploy-v4
         with:
           environment: test
@@ -466,7 +457,7 @@ jobs:
 
 
   upload-mutationfile-lambda:
-    name: Upload MutationFile Lambda
+    name: Upload & Deploy MutationFile Lambda
     needs: [ release ]
     runs-on: ubuntu-latest
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
@@ -498,20 +489,11 @@ jobs:
           S3_LAMBDA_BUCKETNAME: ${{ vars.S3_LAMBDA_BUCKETNAME }}
           S3_LAMBDA: 'kbo-mutations-file'
 
-  deploy-mutationfile-lambda-test:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs:
-      - release
-      - upload-mutationfile-lambda
-    name: Deploy mutation file lambda (Test)
-    runs-on: ubuntu-latest
-
-    steps:
       - name: CD
         id: awscurl-polling-action
         env:
-          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/kbo-mutations-file/test/deploy/v4
-          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/kbo-mutations-file/test/deploy/v4/status
+          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/kbomutationsfile/test/deploy/v4
+          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/kbomutationsfile/test/deploy/v4/status
         uses: informatievlaanderen/awscurl-polling-action/polling-action@deploy-v4
         with:
           environment: test
@@ -535,7 +517,7 @@ jobs:
 
 
   upload-sync-lambda:
-    name: Upload Sync Lambda
+    name: Upload & Deploy Sync Lambda
     needs: [ release ]
     runs-on: ubuntu-latest
     if: ${{ (github.repository_owner == 'Informatievlaanderen') && (needs.release.outputs.version != 'none') }}
@@ -567,20 +549,11 @@ jobs:
           S3_LAMBDA_BUCKETNAME: ${{ vars.S3_LAMBDA_BUCKETNAME }}
           S3_LAMBDA: 'kbo-sync'
 
-  deploy-sync-lambda-test:
-    if: github.repository_owner == 'Informatievlaanderen'
-    needs:
-      - release
-      - upload-sync-lambda
-    name: Deploy sync lambda (Test)
-    runs-on: ubuntu-latest
-
-    steps:
       - name: CD
         id: awscurl-polling-action
         env:
-          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/kbo-sync/test/deploy/v4
-          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/kbo-sync/test/deploy/v4/status
+          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/kbosync/test/deploy/v4
+          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/kbosync/test/deploy/v4/status
         uses: informatievlaanderen/awscurl-polling-action/polling-action@deploy-v4
         with:
           environment: test
