@@ -1,3 +1,11 @@
+## [1.8.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.0...v1.8.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* use variables instead of secrets ([c36a440](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/c36a440b0913afce1be7e3a7649671a1a0b500a0))
+* use variables instead of secrets inside main workflow ([6aae1bb](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/6aae1bb6f97d248c88c08732c837f232380ccc12))
+
 # [1.8.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.7.0...v1.8.0) (2024-09-30)
 
 
