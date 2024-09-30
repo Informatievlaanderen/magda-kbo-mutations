@@ -1,3 +1,15 @@
+# [1.8.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.7.0...v1.8.0) (2024-09-30)
+
+
+### Bug Fixes
+
+* syntax error inside main workflow ([18bfff5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/18bfff5670fa892cac83b5d7c107b152e8e1b07c))
+
+
+### Features
+
+* add deployment functionality for lambda functions ([ff522a6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/ff522a60b19f7551de1b67751f4994566c50e894))
+
 # [1.7.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.6.0...v1.7.0) (2024-08-28)
 
 
