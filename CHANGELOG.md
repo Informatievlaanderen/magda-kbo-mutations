@@ -1,3 +1,12 @@
+## [1.8.7](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.6...v1.8.7) (2024-09-30)
+
+
+### Bug Fixes
+
+* application names should be written like used in code pipelines ([6915aef](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/6915aefe5630d2d7ebd69c089f45eba5826a1c0a))
+* application names should be written like used in code pipelines ([c59480e](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/c59480eeaacb97bf3ee9a9119461d706dfdcfae6))
+* use application names like used in code pipelines ([7b3e7bc](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/7b3e7bca7db6cfc9e5019eafb56b8bc9e382ff8f))
+
 ## [1.8.6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.5...v1.8.6) (2024-09-30)
 
 
