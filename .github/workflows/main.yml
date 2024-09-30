@@ -431,7 +431,9 @@ jobs:
 
   deploy-mutation-lambda-test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ upload-mutation-lambda ]
+    needs:
+      - release
+      - upload-mutation-lambda
     name: Deploy mutation image (Test)
     runs-on: ubuntu-latest
 
@@ -461,6 +463,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
 
   upload-mutationfile-lambda:
@@ -498,7 +501,9 @@ jobs:
 
   deploy-mutationfile-lambda-test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ upload-mutationfile-lambda ]
+    needs:
+      - release
+      - upload-mutationfile-lambda
     name: Deploy mutation file lambda (Test)
     runs-on: ubuntu-latest
 
@@ -528,6 +533,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
 
   upload-sync-lambda:
@@ -565,7 +571,9 @@ jobs:
 
   deploy-sync-lambda-test:
     if: github.repository_owner == 'Informatievlaanderen'
-    needs: [ upload-sync-lambda ]
+    needs:
+      - release
+      - upload-sync-lambda
     name: Deploy sync lambda (Test)
     runs-on: ubuntu-latest
 
@@ -595,6 +603,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
 
   publish_to_atlassian:
