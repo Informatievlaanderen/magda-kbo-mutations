@@ -1,3 +1,10 @@
+## [1.8.6](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.5...v1.8.6) (2024-09-30)
+
+
+### Bug Fixes
+
+* request with deploy_target: lambda requires a lambda key to be present in the version object ([df37f4c](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/df37f4c71e1938e2730c123adae4af3fc0bd4ff1))
+
 ## [1.8.5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.4...v1.8.5) (2024-09-30)
 
 
