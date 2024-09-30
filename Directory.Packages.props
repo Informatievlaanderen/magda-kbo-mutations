@@ -1,7 +1,9 @@
 <Project>
+
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageVersion Include="Amazon.Lambda.TestUtilities" Version="2.0.0" />
     <PackageVersion Include="AutoBogus" Version="2.13.1" />
@@ -41,4 +43,5 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
   </ItemGroup>
+
 </Project>
