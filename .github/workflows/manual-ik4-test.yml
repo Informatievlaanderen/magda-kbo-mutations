@@ -1,0 +1,48 @@
+name: Manual Deploy To Test (IK4)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (format: x.xxx.x, ie: 1.221.1)'
+        required: true
+
+jobs:
+  deployment:
+    name: Deploy lambdas (Test IK4)
+    environment: test_ik4
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        services:
+          [
+            'kbomutations',
+            'kbomutationsfile',
+            'kbosync',
+          ]
+    steps:
+      - name: CD
+        id: awscurl-polling-action
+        env:
+          BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}/test/deploy/v4
+          STATUS_URL: ${{ secrets.VBR_AWS_BUILD_STATUS_API }}/${{matrix.services}}/test/deploy/v4/status
+        uses: informatievlaanderen/awscurl-polling-action/polling-action@deploy-v4
+        with:
+          environment: test
+          version: ${{ github.event.inputs.version }}
+          status-url: $STATUS_URL
+          deploy-url: $BUILD_URL
+          access-key: ${{ secrets.AWS_BUILD_USER_ACCESS_KEY_ID_IK4 }}
+          secret-key: ${{ secrets.AWS_BUILD_USER_SECRET_ACCESS_KEY_IK4 }}
+          deploy-target: 'lambda'
+          domain: 'verenigingsregister'
+          project: 'verenigingsregister'
+          application: 'lambda'
+          interval: 2
+      - name: output
+        shell: bash
+        if: always()
+        run: |
+          echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
+          echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
+          echo ${{ steps.awscurl-polling-action.outputs.final-message }}

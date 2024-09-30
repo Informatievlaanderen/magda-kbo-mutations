@@ -442,7 +442,7 @@ jobs:
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.AWS_BUILD_USER_ACCESS_KEY_ID_IK4 }}
           secret-key: ${{ secrets.AWS_BUILD_USER_SECRET_ACCESS_KEY_IK4 }}
-          deploy-target: 'ecs'
+          deploy-target: 'lambda'
           domain: 'verenigingsregister'
           project: 'verenigingsregister'
           application: 'lambda'
