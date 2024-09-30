@@ -1,3 +1,11 @@
+## [1.8.5](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.4...v1.8.5) (2024-09-30)
+
+
+### Bug Fixes
+
+* updated access key and access key secret values ([16632d8](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/16632d8e5169534c1ababfc2ba392cde87ff7df6))
+* use updated IK4 build and status access key and secret values ([625c72d](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/625c72dd80441faff5e976ba16d1ef593f58159f))
+
 ## [1.8.4](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.3...v1.8.4) (2024-09-30)
 
 
