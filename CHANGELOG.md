@@ -1,3 +1,13 @@
+## [1.8.9](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.8...v1.8.9) (2024-09-30)
+
+
+### Bug Fixes
+
+* update centrally managed packages to include Be.Vlaanderen.Basisregisters.Build.Pipeline ([364113b](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/364113ba14a9295907f46b7d94ce50d91edb6b86))
+* update publish to atlassian ([15022fa](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/15022fae2673044f4375ebae4f65e3d05bc9ce49))
+* update publish to atlassian job which failed ([0f86678](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/0f86678f7034e64ec4d72d674f3b3c92cb027a0e))
+* update publish to atlassian job which failed ([52c40cb](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/52c40cb4d06bea5c6028b7eec3124a949bc8db3b))
+
 ## [1.8.8](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.7...v1.8.8) (2024-09-30)
 
 
