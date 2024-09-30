@@ -563,7 +563,6 @@ jobs:
       - name: Upload Lambda function
         shell: bash
         run: |
-        # aws s3api put-object --bucket $S3_BASEURL --key lambda.zip --body ~/AssociationRegistry.KboMutations.SyncLambda.zip
           aws s3 cp ~/AssociationRegistry.KboMutations.SyncLambda.zip s3://$S3_LAMBDA_BUCKETNAME/$S3_LAMBDA/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
