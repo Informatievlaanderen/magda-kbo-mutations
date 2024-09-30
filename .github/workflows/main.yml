@@ -454,7 +454,7 @@ jobs:
           deploy-target: 'ecs'
           domain: 'verenigingsregister'
           project: 'verenigingsregister'
-          application: 'kbo-mutation'
+          application: 'lambda'
           interval: 2
       - name: output
         shell: bash
@@ -463,6 +463,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
   upload-mutationfile-lambda:
     name: Upload MutationFile Lambda
@@ -522,7 +523,7 @@ jobs:
           deploy-target: 'lambda'
           domain: 'verenigingsregister'
           project: 'verenigingsregister'
-          application: 'kbo-mutations-file'
+          application: 'lambda'
           interval: 2
       - name: output
         shell: bash
@@ -531,6 +532,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
   upload-sync-lambda:
     name: Upload Sync Lambda
@@ -590,7 +592,7 @@ jobs:
           deploy-target: 'lambda'
           domain: 'verenigingsregister'
           project: 'verenigingsregister'
-          application: 'kbo-sync'
+          application: 'lambda'
           interval: 2
       - name: output
         shell: bash
@@ -599,6 +601,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
 
 
