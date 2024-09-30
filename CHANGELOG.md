@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.2...v1.8.3) (2024-09-30)
+
+
+### Bug Fixes
+
+* incorrect version passed to the main workflow ([0034c9b](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/0034c9bb36c45bccb37fd55ebf18534314648050))
+
 ## [1.8.2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.1...v1.8.2) (2024-09-30)
 
 
