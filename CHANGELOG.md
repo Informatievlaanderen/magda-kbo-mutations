@@ -1,3 +1,10 @@
+## [1.8.8](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.7...v1.8.8) (2024-09-30)
+
+
+### Bug Fixes
+
+* kbo mutations ecr image should also use lambda deploy target ([11c7a8e](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/11c7a8e16df26f38b47eefcc277d3ffb13ffccf9))
+
 ## [1.8.7](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.6...v1.8.7) (2024-09-30)
 
 
