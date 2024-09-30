@@ -1,3 +1,11 @@
+## [1.8.4](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.3...v1.8.4) (2024-09-30)
+
+
+### Bug Fixes
+
+* include needs inside deployment steps ([d61cc1b](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/d61cc1b36135b38cf9833f92da6a632d6f9274bf))
+* include release inside step needs ([bb95cf2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/bb95cf22a30e4137bca99b37c675c48590140851))
+
 ## [1.8.3](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.2...v1.8.3) (2024-09-30)
 
 
