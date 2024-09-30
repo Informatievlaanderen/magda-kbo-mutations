@@ -492,7 +492,7 @@ jobs:
           aws s3 cp ~/AssociationRegistry.KboMutations.MutationFileLambda.zip s3://$S3_LAMBDA_BUCKETNAME/$S3_LAMBDA/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_LAMBDA_BUCKETNAME: ${{ secrets.S3_LAMBDA_BUCKETNAME }}
+          S3_LAMBDA_BUCKETNAME: ${{ vars.S3_LAMBDA_BUCKETNAME }}
           S3_LAMBDA: 'kbo-mutations-file'
 
   deploy-mutationfile-lambda-test:
@@ -566,7 +566,7 @@ jobs:
           aws s3 cp ~/AssociationRegistry.KboMutations.SyncLambda.zip s3://$S3_LAMBDA_BUCKETNAME/$S3_LAMBDA/$VERSION/lambda.zip --copy-props none
         env:
           VERSION: ${{ needs.release.outputs.version }}
-          S3_LAMBDA_BUCKETNAME: ${{ secrets.S3_LAMBDA_BUCKETNAME }}
+          S3_LAMBDA_BUCKETNAME: ${{ vars.S3_LAMBDA_BUCKETNAME }}
           S3_LAMBDA: 'kbo-sync'
 
   deploy-sync-lambda-test:
@@ -617,6 +617,7 @@ jobs:
           echo build-uuid: ${{ steps.awscurl-polling-action.outputs.build-uuid }}
           echo Status: ${{ steps.awscurl-polling-action.outputs.status }}
           echo ${{ steps.awscurl-polling-action.outputs.final-message }}
+
 
 
   publish_to_atlassian:
