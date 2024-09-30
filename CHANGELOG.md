@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.1...v1.8.2) (2024-09-30)
+
+
+### Bug Fixes
+
+* use repository specific access key and secret ([e9a4a3d](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/e9a4a3d7496e98223c41b37315ed41db342d4043))
+
 ## [1.8.1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.0...v1.8.1) (2024-09-30)
 
 
