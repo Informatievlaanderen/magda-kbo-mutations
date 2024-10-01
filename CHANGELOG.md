@@ -1,3 +1,10 @@
+## [1.8.10](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.9...v1.8.10) (2024-10-01)
+
+
+### Bug Fixes
+
+* or-2441 use new deployment and status api for staging environment ([b9e92dc](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/b9e92dcb71675a6b99f7feac487c3bb9778fd4ee))
+
 ## [1.8.9](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.8...v1.8.9) (2024-09-30)
 
 
