@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\main.yml = .github\workflows\main.yml
 		.github\workflows\manual-ik4-test.yml = .github\workflows\manual-ik4-test.yml
+		.github\workflows\manual-ik4-staging.yml = .github\workflows\manual-ik4-staging.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46991FC7-44B8-4EA2-A2C2-2CDDBAD1091D}"
