@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Runtime.Serialization;
+using AssociationRegistry.Resources;
 using Be.Vlaanderen.Basisregisters.AggregateSource;
 using Newtonsoft.Json;
 
