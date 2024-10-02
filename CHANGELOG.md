@@ -1,3 +1,11 @@
+## [1.8.12](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.11...v1.8.12) (2024-10-02)
+
+
+### Bug Fixes
+
+* or-2441 update NuGet packages and reference latest version for AssociationRegistry packages ([267c10d](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/267c10d10cc99eea80730263fcec64c0e35df164))
+* or-2441 update NuGet packages and reference latest version for AssociationRegistry packages ([150486a](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/150486a6e14c5b47dd6e079c75da804522b8dcbe))
+
 ## [1.8.11](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.10...v1.8.11) (2024-10-01)
 
 
