@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.9.0...v1.10.0) (2024-10-09)
+
+
+### Features
+
+* add manual deploy to production workflow ([eca2ffb](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/eca2ffb084d93e0f6e4bf79d255c29ce6a6298f7))
+
 # [1.9.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.12...v1.9.0) (2024-10-09)
 
 
