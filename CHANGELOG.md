@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.12...v1.9.0) (2024-10-09)
+
+
+### Features
+
+* update vr libs to 8.154.1 ([fbaee67](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/fbaee6725bb219d5ed589a7d509e4d782b65f5ef))
+
 ## [1.8.12](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.8.11...v1.8.12) (2024-10-02)
 
 
