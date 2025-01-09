@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.11.0...v1.12.0) (2025-01-09)
+
+
+### Features
+
+* or-2583 update libs to 8.194.2 ([9d1b3e1](https://github.com/informatievlaanderen/association-registry-kbo-mutations/commit/9d1b3e117bc49e09faa502cb76b92358d8eaf17d))
+
 # [1.11.0](https://github.com/informatievlaanderen/association-registry-kbo-mutations/compare/v1.10.0...v1.11.0) (2025-01-07)
 
 
