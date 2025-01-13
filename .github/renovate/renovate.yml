@@ -1,0 +1,16 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "matchManagers": ["nuget", "docker-compose"],
+      "matchPackageNames": [
+        "Be.Vlaanderen.Basisregisters.AssociationRegistry",
+        "Be.Vlaanderen.Basisregisters.AssociationRegistry.Magda"
+      ],
+      "matchDepNames": ["verenigingsregister-adminapi"],
+      "groupName": "Combined Dependency Updates",
+      "automerge": false,
+      "schedule": ["before 4am on monday"]
+    }
+  ]
+}
