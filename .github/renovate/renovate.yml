@@ -10,7 +10,7 @@
       "matchDepNames": ["verenigingsregister-adminapi"],
       "groupName": "Combined Dependency Updates",
       "automerge": false,
-      "schedule": ["before 4am on monday"]
+      "schedule": ["every hour"]
     }
   ]
 }
