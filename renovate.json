@@ -15,7 +15,8 @@
       "automergeSchedule": [
         "* * * * *"
       ],
-      "automergeStrategy": "rebase"
+      "automergeStrategy": "rebase",
+      "matchUpdateTypes": ["minor"]
     }
   ]
 }
