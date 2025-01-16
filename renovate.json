@@ -2,5 +2,20 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["nuget"],
+      "matchPackageNames": [
+        "Be.Vlaanderen.Basisregisters.AssociationRegistry",
+        "Be.Vlaanderen.Basisregisters.AssociationRegistry.Magda"
+      ],
+      "groupName": "Update AssociationRegistry",
+      "automerge": true,
+      "automergeSchedule": [
+        "* * * * *"
+      ],
+      "automergeStrategy": "rebase"
+    }
   ]
 }
